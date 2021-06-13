@@ -1,0 +1,116 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "futurecdesign",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#commentsBlock"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#Attributes"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#nameTag"
+		},
+		{
+			"include": "#seperator"
+		},
+		{
+			"include": "#siteName"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.futurecdesign",
+					"match": "\\b(CHANGEDIALOGELEMENT|CHANGEDIALOG|SQL|CHANGEATTRIBUTE|CREATEINDEX|SETRECORD|ADDDIALOGINFO|ADDDIALOGELEMENT|SETDEFAULTVALUE)\\b"
+				}
+			]
+		},
+		"Attributes": {
+			"patterns": [
+				{
+					"name": "constant.language.futurecdesign",
+					"match": "\\b(COLALTERNATIVEID[0-9]|NAME[0-9]|SORTCOLUMN|SHOWCOLWIDTHS|SHOWCOLS|MUSTBEVALIDELEMENTS|COLEDITCLOSED|ALL_EXCEPT|COPYIMPORT|DIRECTORY|SCRIPTNEW|ONCHANGECOMPLETESCRIPT|ONCHANGECOMPLETE|ONCHANGESCRIPTSEARCH|ONCHANGE|PRECISIONPRECOMMA|ONNEWSETVALUES|BRANCHCOL|TABLELINK|ONCHANGESCRIPT[0-9]+|DONTCHANGEATTRIBUTENAME|TOOLTIP|AUTOSAVETIMEOUTINMINUTES|MODULE[0-9]+|SCRIPTLOAD|SCRIPTSAVE|SCRIPTDELETE|TITLE|ACTIVE|LINKSEARCHCOMBO|TYPE|SORTCOLUMNTYPE|SCRIPTS|SCRIPTBUTTONS|PAGE|XPOS|YPOS|WIDTH|HEIGHT|NAMEPOSITION|NEXTTABPOS|VISIBLE|READONLY|PARAMETER[0-9]+)\\b(=|)"
+				}
+			]
+		},
+		"comments": {
+			"name": "comment.line.futurecdesign",
+			"begin": "//",
+			"end": "$"
+		},
+		"commentsBlock": {
+			"name": "comment.block.futurecdesign",
+			"begin": "\\/\\*",
+			"end": "\\*\\/"
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.futurecdesign",
+					"match": "\\b\\d+(B|)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.futurecdesign",
+			"begin": "\"",
+			"end": "(\"|$)",
+			"patterns": [
+				{
+					"name": "constant.character.escape.futurecdesign",
+					"match": "\\\\."
+				}
+			]
+		},
+		"nameTag": {
+			"name": "constant.language.futurecdesign",
+			"begin": "\\bNAME=\\b",
+			"end": "(;|$)",
+			"patterns": [
+				{
+					"match": "[^;]",
+					"name": "string.quoted.double.futurecdesign"
+				}
+			],
+			"endCaptures": {
+				"0": {
+					"name": "variable.parameter.futurecdesign"
+				}
+			}
+		},
+		"seperator": {
+			"name": "variable.parameter.futurecdesign",
+			"match": "\\b;\\b"
+		},
+		"siteName": {
+			"begin": ":[0-9]+;0;",
+			"end": ";",
+			"beginCaptures": {
+				"0":{
+					"name": "comment"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "variable.parameter.futurecdesign"
+				}
+			},
+			"contentName": "string.quoted.double.futurecdesign"
+		}
+	},
+	"scopeName": "source.futurecdesign"
+}

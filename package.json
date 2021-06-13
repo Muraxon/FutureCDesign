@@ -1,0 +1,81 @@
+{
+	"name": "futurecdesign",
+	"description": "Ein Languageserver für designfiles",
+	"author": "Marcel Sotiropoulos <marcel.sotiropoulos@soti-it.at>",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/vscode-extension-samples"
+	},
+	"publisher": "MarcelSotiropoulos",
+	"categories": [],
+	"keywords": [
+		"multi-root ready"
+	],
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"activationEvents": [
+		"onLanguage:futurecdesign",
+		"onCommand:open.futurec.designer"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "futurecdesign",
+				"extensions": [
+					".txt"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "futurecdesign",
+				"scopeName": "source.futurecdesign",
+				"path": "./syntaxes/futurecdesign.tmLanguage.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "open.futurec.designer",
+				"title": "Open Designer",
+				"category": "FutureC"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "editorFocus && editorLangId == futurecdesign",
+					"command": "open.futurec.designer",
+					"group": "navigation"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "open.futurec.designer",
+					"group": "navigation",
+					"when": "editorFocus && editorLangId == futurecdesign"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^8.2.2",
+		"@types/node": "^12.12.0",
+		"@typescript-eslint/eslint-plugin": "^4.21.0",
+		"@typescript-eslint/parser": "^4.21.0",
+		"eslint": "^7.23.0",
+		"mocha": "^8.3.2",
+		"typescript": "^4.2.3"
+	}
+}

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Security-Policy">
+	<title>Test</title>
+	<style>
+		DIALOG_CSS
+
+		/* The Modal (background) */
+		.modal {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			/* Stay in place */
+			z-index: 1;
+			/* Sit on top */
+			left: 0;
+			top: 0;
+			width: 100%;
+			/* Full width */
+			height: 100%;
+			/* Full height */
+			overflow: auto;
+			/* Enable scroll if needed */
+			background-color: rgb(0, 0, 0);
+			/* Fallback color */
+			background-color: rgba(0, 0, 0, 0.4);
+			/* Black w/ opacity */
+			padding-top: 60px;
+		}
+
+		/* Modal Content/Box */
+		.modal-content {
+			background-color: #fefefe;
+			padding: 40px;
+			margin: 5% auto 15% auto;
+			/* 5% from the top, 15% from the bottom and centered */
+			border: 1px solid #888;
+			width: 60%;
+			/* Could be more or less, depending on screen size */
+		}
+
+
+		/* Add Zoom Animation */
+		.animate {
+			-webkit-animation: animatezoom 0.6s;
+			animation: animatezoom 0.6s
+		}
+
+		@-webkit-keyframes animatezoom {
+			from {
+				-webkit-transform: scale(0)
+			}
+
+			to {
+				-webkit-transform: scale(1)
+			}
+		}
+
+		@keyframes animatezoom {
+			from {
+				transform: scale(0)
+			}
+
+			to {
+				transform: scale(1)
+			}
+		}
+
+		/* Full-width input fields */
+		input[type=text],
+		input[type=password],
+		input[type=number],
+		select {
+			width: 100%;
+			padding: 12px 20px;
+			margin: 8px 0;
+			display: inline-block;
+			border: 1px solid #ccc;
+			box-sizing: border-box;
+		}
+
+		input[type=button] {
+			background-color: rgb(14, 99, 156);
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+		}
+
+		.notsaved {
+			background-color: lightgrey !important;
+		}
+
+		.saveAllButton {
+			position: fixed;
+			top: 100%;
+			left: 100%;
+			transform: translate(-130%, -150%);
+		}
+	</style>
+</head>
+
+<body style="color: black; background-color: #bfdbff;">
+
+	<div id="id01" class="modal">
+
+		<div class="modal-content animate">
+			OnChange:<input id="onchange" type="text">
+			Next Tab:<input id="nexttab" type="text">
+			Page:<input id="page" type="number">
+			Type:<select name="type" id="type">
+				<option value="1">STATIC </option>
+				<option value="2">GROUPBOX </option>
+				<option value="3">PICTURE </option>
+				<option value="4">LINE </option>
+				<option value="5">RECTANGLE </option>
+				<option value="6">STATICLED </option>
+				<option value="10">BUTTON </option>
+				<option value="11">BUTTONOK </option>
+				<option value="12">BUTTONCANCEL </option>
+				<option value="13">BITMAPBUTTON </option>
+				<option value="15">CHECKBOX </option>
+				<option value="16">RADIO </option>
+				<option value="20">EDIT </option>
+				<option value="21">EDIT_MULTILINE </option>
+				<option value="22">EDIT_NUMERIC </option>
+				<option value="23">EDIT_PASSWORD </option>
+				<option value="24">EDIT_MONEY </option>
+				<option value="25">EDIT_DATE </option>
+				<option value="26">EDIT_TIME </option>
+				<option value="27">EDIT_IPADDRESS </option>
+				<option value="28">EDIT_DATETIME </option>
+				<option value="29">EDIT_PERCENT </option>
+				<option value="30">EDIT_RICH </option>
+				<option value="31">EDIT_COLOR </option>
+				<option value="35">GRAPHICPAINTER </option>
+				<option value="40">COMBO </option>
+				<option value="41">LIST </option>
+				<option value="42">LISTVIEW </option>
+				<option value="43">LISTVIEWSUBTABLE </option>
+				<option value="44">LISTVIEWLINKTABLE </option>
+				<option value="45">LISTVIEWLINKEDTABLE </option>
+				<option value="46">LISTVIEWLINKTABLEDOCUMENT </option>
+				<option value="47">LISTVIEWLINKTABLEPICTURES </option>
+				<option value="48">TREELIST </option>
+				<option value="49">TREEVIEW </option>
+				<option value="50">SPIN </option>
+				<option value="51">SLIDER </option>
+				<option value="52">PROGRESS </option>
+				<option value="60">TAB </option>
+				<option value="70">LINK_COMBO </option>
+				<option value="72">LINK_SEARCH </option>
+				<option value="80">COMBO_TREE </option>
+				<option value="81">LINK_COMBO_TREE </option>
+				<option value="82">LINK_CHECKCOMBO </option>
+				<option value="100">EXTERNWINDOW </option>
+				<option value="200">PAGE </option>
+				<option value="201">RB_TAB </option>
+				<option value="202">RB_GROUP </option>
+				<option value="203">RB_BUTTON </option>
+				<option value="204">RB_POPUP </option>
+				<option value="205">RB_BUTTONPOPUP </option>
+				<option value="206">RB_SPLITBUTTONPOPUP </option>
+				<option value="207">RB_COMBOBOX </option>
+				<option value="208">RB_EDIT </option>
+				<option value="209">RB_CUSTOM </option>
+				<option value="210">RB_LABEL </option>
+				<option value="211">RB_CHECKBOX </option>
+				<option value="212">RB_GALLERY </option>
+				<option value="213">RB_FASTBUTTON </option>
+				<option value="214">RB_FASTEDIT </option>
+				<option value="215">RB_MENUITEM </option>
+				<option value="216">RB_RADIOGROUP </option>
+				<option value="217">RB_LISTVIEW </option>
+				<option value="218">RB_EDIT_DATE </option>
+				<option value="219">RB_LINK_COMBO </option>
+				<option value="220">RB_LINK_SEARCH </option>
+				<option value="221">RB_STATIC </option>
+				<option value="222">RB_SYSMENU </option>
+				<option value="223">TITLESTRING </option>
+				<option value="224">RB_EDIT_MULTILINE </option>
+				<option value="225">NOTE </option>
+				<option value="226">MONTHCALENDAR </option>
+				<option value="227">LINK_COMBO_DOCUMENT </option>
+				<option value="228">RB_LINK_COMBO_TREE </option>
+
+
+			</select>
+			Nameposition:<select name="nameposition" id="nameposition">
+				<option value="1">Oben</option>
+				<option value="2">Rechts</option>
+				<option value="3">Unten</option>
+				<option value="4">Links</option>
+			</select>
+			Visible:<select name="visible" id="visible">
+				<option value="1">Ja</option>
+				<option value="0">Nein</option>
+			</select>
+			Readonly:<select name="readonly" id="readonly">
+				<option value="1">Ja</option>
+				<option value="0">Nein</option>
+			</select>
+			Name:<input id="name" type="text">
+			<input id="column" type="hidden">
+			<p id="column_info"></p>
+			<input type="button" value="Speichern" onclick="Postmessage(false)">
+			<input type="button" value="Abbrechen" onclick="document.getElementById('id01').style.display='none';">
+		</div>
+	</div>
+
+	<div id="main_dialog" style="margin: 20px; width: 100%; height: 100%; position: absolute;">
+		DIALOG_HTML
+	</div>
+
+	<input type="button" id="saveAllButton" style="display: none;" class="saveAllButton" value="Alle Elemente speichern"
+		onclick="Postmessage(true)">
+
+
+	<script>
+		const vscode = acquireVsCodeApi();
+		let table = TABLE_NUMBER;
+
+		function Postmessage(saveAll) {
+			document.getElementById('id01').style.display = 'none';
+
+
+			let arr = [];
+			let elements = [];
+
+			if (!saveAll) {
+				let element = document.getElementById("" + table + "-" + document.getElementById("column").value);
+				elements.push(element);
+			} else {
+				elements = document.querySelectorAll(".notsaved");
+			}
+
+			let allElementsChange = [];
+			elements.forEach((element) => {
+				let column = "";
+				let onchange = "";
+				let nexttab = "";
+				let page = "";
+				let type = "";
+				let nameposition = "";
+				let visible = "";
+				let readonly = "";
+				let name = "";
+				if (saveAll) {
+					column = element.getAttribute("data-column");
+					onchange = element.getAttribute("data-onchange");
+					nexttab = element.getAttribute("data-nexttab");
+					page = element.getAttribute("data-page");
+					type = element.getAttribute("data-type");
+					nameposition = element.getAttribute("data-nameposition");
+					visible = element.getAttribute("data-visible");
+					readonly = element.getAttribute("data-readonly");
+					name = element.getAttribute("data-name");
+				} else {
+					column = document.getElementById("column").value;
+					onchange = document.getElementById("onchange").value;
+					nexttab = document.getElementById("nexttab").value;
+					page = document.getElementById("page").value;
+					type = document.getElementById("type").value;
+					nameposition = document.getElementById("nameposition").value;
+					visible = document.getElementById("visible").value;
+					readonly = document.getElementById("readonly").value;
+					name = document.getElementById("name").value;
+
+					element.setAttribute("data-column", column);
+					element.setAttribute("data-onchange", onchange);
+					element.setAttribute("data-nexttab", nexttab);
+					element.setAttribute("data-page", page);
+					element.setAttribute("data-type", type);
+					element.setAttribute("data-nameposition", nameposition);
+					element.setAttribute("data-visible", visible);
+					element.setAttribute("data-readonly", readonly);
+					element.setAttribute("data-name", name);
+					if (type != 15) {
+						element.innerHTML = name;
+					} else {
+						element.innerHTML = `<input type="checkbox">` + name;
+					}
+				}
+
+				element.className = element.className.replace(" notsaved", "");
+
+				arr = [];
+				if(!saveAll) {
+
+					arr.push({
+						type: "TYPE=",
+						text: type
+					});
+					arr.push({
+						type: "PAGE=",
+						text: page
+					});
+				}
+
+				arr.push({
+					type: "XPOS=",
+					text: element.style.left
+				})
+				arr.push({
+					type: "YPOS=",
+					text: element.style.top
+				})
+				// arr.push({
+				// 	type: "WIDTH=",
+				// 	text: element.style.width
+				// })
+				// arr.push({
+				// 	type: "HEIGHT=",
+				// 	text: "1.2"
+				// })
+
+				if(!saveAll) {
+					arr.push({
+						type: "NEXTTABPOS=",
+						text: nexttab
+					});
+					arr.push({
+						type: "NAMEPOSITION=",
+						text: nameposition
+					});
+					arr.push({
+						type: "VISIBLE=",
+						text: visible
+					});
+					arr.push({
+						type: "READONLY=",
+						text: readonly
+					});
+					arr.push({
+						type: "NAME=",
+						text: name
+					});
+					arr.push({
+						type: "ONCHANGE=",
+						text: onchange
+					});
+				}	
+
+				allElementsChange.push({
+					column: column,
+					command: 'saveChanges',
+					table: table,
+					values: arr
+				});
+			});
+
+			if(document.querySelectorAll(".notsaved").length <= 0) {
+				document.getElementById("saveAllButton").style.display = "none";
+			}
+
+			vscode.postMessage(allElementsChange);
+		}
+
+		// Get the modal
+		var modal = document.getElementById('id01');
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function (event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+
+		function showElementDialog(event) {
+			if (event.ctrlKey && !event.altKey && !event.shiftKey) {
+				document.getElementById("column").value = event.target.getAttribute("data-column");
+				document.getElementById("column_info").innerHTML = "Spalte: " + event.target.getAttribute("data-column");
+				document.getElementById("onchange").value = event.target.getAttribute("data-onchange");
+				document.getElementById("nexttab").value = event.target.getAttribute("data-nexttab");
+				document.getElementById("page").value = event.target.getAttribute("data-page");
+				document.getElementById("type").value = event.target.getAttribute("data-type");
+				document.getElementById("nameposition").value = event.target.getAttribute("data-nameposition");
+				document.getElementById("visible").value = event.target.getAttribute("data-visible");
+				document.getElementById("readonly").value = event.target.getAttribute("data-readonly");
+				document.getElementById("name").value = event.target.getAttribute("data-name");
+
+				document.getElementById('id01').style.display = 'block';
+			} else if (event.ctrlKey && event.altKey && event.shiftKey) {
+				vscode.postMessage([{
+					command: "removeElement",
+					table: table,
+					column: "" + event.target.getAttribute("data-column")
+				}])
+				document.getElementById(activeIndex).removeChild(event.target);
+			}
+		}
+
+	</script>
+
+	<script type="module">
+		import { dragmove } from 'ONDISKPATH';
+
+		// Use the start/end events to simulate "snap to edge" behaviour.
+		const snapThreshold = 50;
+		function onStart(el, x, y) {
+			// On drag start, remove the fixed bottom style to prevent the bottom
+			// from sticking on the screen.
+			el.style.top = el.offsetTop + "px";
+			el.style.bottom = "auto";
+		}
+
+		function onEnd(el, x, y) {
+
+			if (el.className.search("notsaved") < 0) {
+				el.className += " notsaved";
+			}
+
+			document.getElementById("saveAllButton").style.display = "block";
+			// Automatically snap to corners.
+			// if (window.innerHeight - (el.offsetTop + el.offsetHeight) < snapThreshold) {
+			// 	el.style.top = "auto"
+			// 	el.style.bottom = "0px"
+			// }
+			// if (window.innerWidth - (el.offsetLeft + el.offsetWidth) < snapThreshold) {
+			// 	el.style.left = "auto"
+			// 	el.style.right = "0px"
+			// }
+			// if (el.offsetTop < snapThreshold) {
+			// 	el.style.top = "0px"
+			// }
+			// if (el.offsetLeft < snapThreshold) {
+			// 	el.style.left = "0px"
+			// }
+		}
+
+		(function () {
+			let v = document.querySelectorAll(".Testungen");
+			v.forEach((value) => {
+				dragmove(value, value, onStart, onEnd);
+			});
+
+			let newelementsID = 100000;
+			window.addEventListener("click", (event) => {
+				if (event.ctrlKey && event.altKey && !event.shiftKey) {
+					event.stopPropagation();
+					const xFactor = (150 / 30);
+
+					let newElement = document.createElement("div");
+					newElement.style.backgroundColor = "white";
+					newElement.style.resize = "none";
+					newElement.style.height = "20px";
+					newElement.style.top = "" + event.offsetY + "px";
+					newElement.style.left = "" + event.offsetX + "px";
+					newElement.style.width = `${(35 * xFactor)}px`;
+					newElement.style.position = "absolute";
+					newElement.style.border = " 1px solid #7a7a7a";
+					newElement.onclick = showElementDialog;
+					newElement.setAttribute("data-saved", "1");
+					newElement.setAttribute("data-column", "");
+					newElement.setAttribute("data-onchange", "");
+					newElement.setAttribute("data-nexttab", "0");
+					newElement.setAttribute("data-page", activeIndex);
+					newElement.setAttribute("data-type", "25");
+					newElement.setAttribute("data-nameposition", "4");
+					newElement.setAttribute("data-visible", "1");
+					newElement.setAttribute("data-readonly", "0");
+					newElement.setAttribute("data-name", "new_element");
+					newElement.className += "Testungen";
+					newElement.innerHTML = "neues Element";
+					newElement.id = "" + table + "-" + newelementsID;
+					
+					document.getElementById(activeIndex).appendChild(newElement);
+					dragmove(newElement, newElement, onStart, onEnd);
+					
+					vscode.postMessage([{
+						command: "askColumn",
+						id: newelementsID
+					}])
+					newelementsID++;
+				}
+			});
+
+			// Handle the message inside the webview
+			window.addEventListener('message', event => {
+				const message = event.data; // The JSON data our extension sent
+				switch (message.command) {
+					case 'setColumnOfNewElement':
+						let element = document.getElementById("" + table + "-" + message.id);
+						element.setAttribute("data-column", "" + message.newid);
+						element.id = "" + table + "-" + message.newid;
+
+						break;
+				}
+			});
+			
+
+		})();
+	</script>
+</body>
+
+</html>
