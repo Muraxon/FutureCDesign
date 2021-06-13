@@ -14,14 +14,13 @@ export const dragmove = function(target, handler, onStart, onEnd) {
       if (e.touches) {
         c = e.touches[0];
       }
-      
+
       // On mouse move, dispatch the coords to all registered callbacks.
       for (var i = 0; i < _callbacks.length; i++) {
-        
-        let restX = c.clientX % 10;
-        let restY = c.clientY % 10;
-        
-        _callbacks[i](c.clientX, c.clientY);
+        let restX = c.clientX - (c.clientX % 5);
+        let restY = c.clientY - (c.clientY % 4);
+              
+        _callbacks[i](restX, restY);
       }
     });
   }
@@ -46,8 +45,8 @@ export const dragmove = function(target, handler, onStart, onEnd) {
     
     
     isMoving = true;
-    startX = target.offsetLeft - c.clientX;
-    startY = target.offsetTop - c.clientY;
+    startX = target.offsetLeft - c.clientX - (c.clientX % 5);
+    startY = target.offsetTop - c.clientY - (c.clientY % 4);
   });
 
   // On leaving click, stop moving.
@@ -75,6 +74,9 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 
     lastX = x + startX;
     lastY = y + startY;
+    
+    lastX -= (lastX % 5);
+    lastY -= (lastY % 4);
 
     // If boundary checking is on, don't let the element cross the viewport.
     if (target.dataset.dragBoundary === "true") {

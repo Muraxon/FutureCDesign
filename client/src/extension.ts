@@ -96,7 +96,12 @@ export function activate(context: ExtensionContext) {
 				path.join(context.extensionPath, 'webview', 'js', 'dragmove.js')
 			);
 
+			const jquery_path_temp = Uri.file(
+				path.join(context.extensionPath, 'webview', 'js', 'jquery.js')
+			);
+
 			const onDiskPath = panel.webview.asWebviewUri(onDiskPathtemp);
+			const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
 
 			let editor = window.activeTextEditor;
 			let obj = CDesignWebConstructor.CreateElements(editor.document, tablenumer, page);
@@ -106,13 +111,14 @@ export function activate(context: ExtensionContext) {
 			html_text = html_text.replace("DIALOG_CSS", obj.css);
 			html_text = html_text.replace("ONDISKPATH", onDiskPath.toString());
 			html_text = html_text.replace("TABLE_NUMBER", tablenumer);
+			html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
 			
 			panel.webview.html = html_text;
 
 			panel.webview.onDidReceiveMessage(async (messages) => {
-				const xFactor = (150/30);
+				const xFactor = 5;
 				const widthFactor = (150/30);
-				const yFactor = (1080/28);
+				const yFactor = 40;//(1080/28);
 
 				for(let y = 0; y < messages.length; y++) {
 					switch (messages[y].command) {
@@ -131,8 +137,6 @@ export function activate(context: ExtensionContext) {
 									editBuilder.delete(range);
 								});
 							}
-
-
 							break;
 						case "askColumn":
 							let input = await window.showInputBox({

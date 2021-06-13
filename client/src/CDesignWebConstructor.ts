@@ -16,9 +16,9 @@ export class CDesignWebConstructor {
 		let i = 0;
 		let html_text = "";
 		let css_text = "";
-		const xFactor = (150/30);
+		const xFactor = 5;
 		const widthFactor = (150/30);
-		const yFactor = (1080/28);
+		const yFactor = 40;//(1080/28);
 
 		let pages_text :Map<string, string> = new Map();
 
@@ -44,7 +44,7 @@ export class CDesignWebConstructor {
 				let regHidden = /VISIBLE=(1)/gm;
 				let mHidden = regHidden.exec(linetext.text);
 				
-				let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()/\\%]+);?/gm;
+				let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
 				let mName = regName.exec(linetext.text);
 				
 				let regWidth = /WIDTH=([0-9.%B]+);/gm;
@@ -112,6 +112,7 @@ export class CDesignWebConstructor {
 
 				if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
 					let xpos :string|number = (parseFloat(m[1]) * xFactor);
+					if(xpos % 5 == 4) { xpos = xpos + 1; }
 					let xposlabel :string|number = xpos;
 					let xposTextlabel :string|number = xpos;
 
@@ -135,7 +136,7 @@ export class CDesignWebConstructor {
 						xposTextlabel = xposTextlabel + "px";
 						xpos = "" + xpos + "px";
 					}
-					let ypos = "" + (parseFloat(mY[1]) * yFactor);
+					let ypos :string|number = (parseFloat(mY[1]) * yFactor);
 					if(mY[1].search("%") >= 0) {
 						ypos = mY[1]; 
 					} else {
@@ -156,7 +157,7 @@ export class CDesignWebConstructor {
 						width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "%";
 					}
 					
-					let height :string|number = (parseFloat(mHeight[1]) * (20/1.2));
+					let height :string|number = (parseFloat(mHeight[1]) * 20);
 					height--;
 					if(mHeight[1].search("%") >= 0) {
 						height = mHeight[1];
@@ -228,7 +229,7 @@ export class CDesignWebConstructor {
 						data-visible="${mHidden[1]}" 
 						data-readonly="${mREADONLY}" 
 						data-name="${elementName}" 
-						class="Testungen ${class_name}" ${styleTextField} id="${tablenumber+"-"+mColumn[1]}">${name}</div>`;
+						class="Testungen ${class_name}" ${styleTextField} id="${tablenumber+"-"+mColumn[1]}"><div>${elementName}</div></div>`;
 
 						let newHtml = pages_text.get(mPage[1]) + html_text;
 						pages_text.set(mPage[1], newHtml);
