@@ -486,20 +486,26 @@
 
 		function showElementDialog(event) {
 			if (event.ctrlKey && !event.altKey && !event.shiftKey) {
-				document.getElementById("column").value = event.target.getAttribute("data-column");
-				document.getElementById("column_info").innerHTML = "Spalte: " + event.target.getAttribute("data-column");
-				document.getElementById("onchange").value = event.target.getAttribute("data-onchange");
-				document.getElementById("nexttab").value = event.target.getAttribute("data-nexttab");
-				document.getElementById("page").value = event.target.getAttribute("data-page");
-				document.getElementById("type").value = event.target.getAttribute("data-type");
-				document.getElementById("nameposition").value = event.target.getAttribute("data-nameposition");
-				document.getElementById("visible").value = event.target.getAttribute("data-visible");
-				document.getElementById("readonly").value = event.target.getAttribute("data-readonly");
-				document.getElementById("name").value = event.target.getAttribute("data-name");
+				let target = event.target;
+				console.log(target.className.search("text_of_element"));
+				console.log(target.className);
+				if (target.className.search("text_of_element") >= 0) {
+					target = event.target.parentElement;
+				}
+				document.getElementById("column").value = target.getAttribute("data-column");
+				document.getElementById("column_info").innerHTML = "Spalte: " + target.getAttribute("data-column");
+				document.getElementById("onchange").value = target.getAttribute("data-onchange");
+				document.getElementById("nexttab").value = target.getAttribute("data-nexttab");
+				document.getElementById("page").value = target.getAttribute("data-page");
+				document.getElementById("type").value = target.getAttribute("data-type");
+				document.getElementById("nameposition").value = target.getAttribute("data-nameposition");
+				document.getElementById("visible").value = target.getAttribute("data-visible");
+				document.getElementById("readonly").value = target.getAttribute("data-readonly");
+				document.getElementById("name").value = target.getAttribute("data-name");
 
 				document.getElementById('id01').style.display = 'block';
 
-				if (event.target.getAttribute("data-type") == 45) {
+				if (target.getAttribute("data-type") == 45) {
 					document.getElementById("linkedtable_info").style.display = "block";
 				} else {
 					document.getElementById("linkedtable_info").style.display = "none";
@@ -629,7 +635,7 @@
 					newElement.setAttribute("data-readonly", "0");
 					newElement.setAttribute("data-name", "new_element");
 					newElement.className += " Testungen notsaved";
-					newElement.innerHTML = "neues Element";
+					newElement.innerHTML = "<div class='text_of_element'>Neues Element</div>";
 					newElement.id = "" + table + "-" + newelementsID;
 
 					document.getElementById(activeIndex).appendChild(newElement);

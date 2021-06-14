@@ -229,7 +229,7 @@ export class CDesignWebConstructor {
 						data-visible="${mHidden[1]}" 
 						data-readonly="${mREADONLY}" 
 						data-name="${elementName}" 
-						class="Testungen ${class_name}" ${styleTextField} id="${tablenumber+"-"+mColumn[1]}"><div>${elementName}</div></div>`;
+						class="Testungen ${class_name}" ${styleTextField} id="${tablenumber+"-"+mColumn[1]}"><div class="text_of_element">${elementName}</div></div>`;
 
 						let newHtml = pages_text.get(mPage[1]) + html_text;
 						pages_text.set(mPage[1], newHtml);
