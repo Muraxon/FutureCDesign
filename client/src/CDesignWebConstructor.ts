@@ -287,7 +287,7 @@ export class CDesign {
 						data-visible="${mHidden[1]}" 
 						data-readonly="${mREADONLY}" 
 						data-name="${elementName}" 
-						class="Testungen" id="${tablenumber+"-"+mColumn[1]}"</div>
+						class="Testungen" id="${tablenumber+"-"+mColumn[1]}"
 					`);
 
 					let newHtml = pages_text.get(mPage[1]) + html_text;
