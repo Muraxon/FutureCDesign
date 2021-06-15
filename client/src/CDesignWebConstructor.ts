@@ -256,20 +256,20 @@ export class CDesign {
 							${styleCheckbox}
 							DATA_TO_SET_IN_ELEMENT
 							>
-							<input type="checkbox">${name}
+							<input class="text_of_element" type="checkbox">${name}
 						</div>`;
 						
 					} else if(parseInt(mType[1]) == 4) {
 						html_text = `<div ${styleSeperator}
 							DATA_TO_SET_IN_ELEMENT>
-							<div>${name}</div>
+							<div class="text_of_element">${name}</div>
 						</div>`;
 
 
 					} else {
 						html_text = `<div ${styleTextField} 
 							DATA_TO_SET_IN_ELEMENT>
-							<div>${elementName}</div>
+							<div class="text_of_element">${elementName}</div>
 						</div>
 						`;
 					
@@ -287,8 +287,7 @@ export class CDesign {
 						data-visible="${mHidden[1]}" 
 						data-readonly="${mREADONLY}" 
 						data-name="${elementName}" 
-						id="${tablenumber}-${mColumn[1]}"
-						class="Testungen" 
+						class="Testungen" id="${tablenumber+"-"+mColumn[1]}"</div>
 					`);
 
 					let newHtml = pages_text.get(mPage[1]) + html_text;
