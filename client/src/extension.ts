@@ -13,7 +13,7 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
-import { CDesignWebConstructor } from './CDesignWebConstructor';
+import { CDesign } from './CDesignWebConstructor';
 
 let client: LanguageClient;
 
@@ -104,7 +104,7 @@ export function activate(context: ExtensionContext) {
 			const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
 
 			let editor = window.activeTextEditor;
-			let obj = CDesignWebConstructor.CreateElements(editor.document, tablenumer, page);
+			let obj = CDesign.CreateElements(editor.document, tablenumer, page);
 			
 			let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "index.html")).toString("utf-8");
 			html_text = html_text.replace("DIALOG_HTML", obj.html);
@@ -116,9 +116,6 @@ export function activate(context: ExtensionContext) {
 			panel.webview.html = html_text;
 
 			panel.webview.onDidReceiveMessage(async (messages) => {
-				const xFactor = 5;
-				const widthFactor = (150/30);
-				const yFactor = 40;//(1080/28);
 
 				for(let y = 0; y < messages.length; y++) {
 					switch (messages[y].command) {
@@ -163,22 +160,8 @@ export function activate(context: ExtensionContext) {
 											let indexEnd = text.indexOf(";", indexStart);
 	
 											if(messages[y].values[x].type == "ONCHANGE=") {
-												let isInString = false;
-												indexEnd = indexStart;
-												while(indexEnd < endofLine) {
-													let char = text.charAt(indexEnd);
-													if(char == "\"") {
-														isInString = !isInString;
-													}
-													if(isInString) {
-														indexEnd++;
-														continue;
-													}
-													if(char == ";") {
-														break;
-													}
-													indexEnd++;
-												}
+												let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, indexStart);
+												indexEnd = onchangeIndeces.end;
 											}
 	
 											if(indexEnd >= 0 && indexEnd < endofLine) {
@@ -191,16 +174,7 @@ export function activate(context: ExtensionContext) {
 													
 													try {
 												
-														if(messages[y].values[x].type == "XPOS=") {
-															let number :string|number = parseFloat(messages[y].values[x].text);
-															number = (number / xFactor).toFixed(1);
-															messages[y].values[x].text = "" + number;
-														} else if(messages[y].values[x].type == "YPOS=") {
-															let number :string|number= parseFloat(messages[y].values[x].text);
-															number = (number / yFactor).toFixed(1);
-															messages[y].values[x].text = "" + number;
-														}
-		
+														messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
 														editBuilder.replace(rangeStart, messages[y].values[x].text);
 														new_editor.selection = new Selection(pos, pos);
 														new_editor.revealRange(rangeStart, TextEditorRevealType.InCenter);
@@ -218,18 +192,10 @@ export function activate(context: ExtensionContext) {
 											await new_editor.edit((editBuilder) => {
 												let pos = new_editor.document.positionAt(endofLine - 1);
 		
-												if(messages[y].values[x].type == "ONCHANGE=") {
-													messages[y].values[x].text = "\"" + messages[y].values[x].text + "\"";
-												}
-												if(messages[y].values[x].type == "XPOS=") {
-													let number :string|number = parseFloat(messages[y].values[x].text);
-													number = (number / xFactor).toFixed(1);
-													messages[y].values[x].text = "" + number;
-												} else if(messages[y].values[x].type == "YPOS=") {
-													let number :string|number= parseFloat(messages[y].values[x].text);
-													number = (number / yFactor).toFixed(1);
-													messages[y].values[x].text = "" + number;
-												}
+												
+
+												messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
+												
 		
 												let text =  messages[y].values[x].type + messages[y].values[x].text + ";";
 												editBuilder.insert(pos, text);
@@ -245,22 +211,8 @@ export function activate(context: ExtensionContext) {
 											let indexEnd = text.indexOf(";", tempindexStart);
 	
 											if(messages[y].values[x].type == "ONCHANGE=") {
-												let isInString = false;
-												indexEnd = indexStart;
-												while(indexEnd < endofLine) {
-													let char = text.charAt(indexEnd);
-													if(char == "\"") {
-														isInString = !isInString;
-													}
-													if(isInString) {
-														indexEnd++;
-														continue;
-													}
-													if(char == ";") {
-														break;
-													}
-													indexEnd++;
-												}
+												let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, tempindexStart);
+												indexEnd = onchangeIndeces.end;
 											}
 	
 											await new_editor.edit((editBuilder) => {
@@ -284,28 +236,10 @@ export function activate(context: ExtensionContext) {
 										searchColumn--;
 									}
 
-									if(messages[y].values[x].type == "XPOS=") {
-										let number :string|number = parseFloat(messages[y].values[x].text);
-										number = (number / xFactor).toFixed(1);
-										messages[y].values[x].text = "" + number;
-									} else if(messages[y].values[x].type == "YPOS=") {
-										let number :string|number= parseFloat(messages[y].values[x].text);
-										number = (number / yFactor).toFixed(1);
-										messages[y].values[x].text = "" + number;
-									}
-									else if(messages[y].values[x].type == "WIDTH=") {
-										let number :string|number = parseFloat(messages[y].values[x].text);
-										number = (number / xFactor).toFixed(1);
-										messages[y].values[x].text = "" + number;
-									} else if(messages[y].values[x].type == "HEIGHT=") {
-										let number :string|number= parseFloat(messages[y].values[x].text);
-										number = (number / yFactor).toFixed(1);
-										messages[y].values[x].text = "" + number;
-									}
+									messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
 
 									let endofLine = text.indexOf("\n", index + 4);
 									endofLine++;
-
 									await new_editor.edit((editBuilder) => {
 										let pos = new_editor.document.positionAt(endofLine);
 										let text = "CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";" + messages[y].values[x].type + messages[y].values[x].text + ";\n";

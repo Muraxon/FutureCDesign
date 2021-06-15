@@ -7,18 +7,79 @@ function escape_HTML(html_str :string) {
 	 return encodedStr;
 }
 
-export class CDesignWebConstructor {
+export class CDesign {
+	public static get xfactor() { return (150/30); }
+	public static get yfactor() { return 40; }
+
 	constructor() {
 
+	}
+
+	static GetOnChangeStartAndEnd(value :string, start :number) {
+		let tempindexStart = start + value.length;
+		let indexEnd = tempindexStart;
+		let endofLine = value.indexOf("\n", 1);
+
+		let isInString = false;
+		indexEnd = start;
+		while(indexEnd < endofLine) {
+			let char = value.charAt(indexEnd);
+			if(char == "\"") {
+				isInString = !isInString;
+			}
+			if(isInString) {
+				indexEnd++;
+				continue;
+			}
+			if(char == ";") {
+				break;
+			}
+			indexEnd++;
+		}
+
+		return {
+			end: indexEnd,
+			start: tempindexStart
+		}
+	}
+
+	static ToRightFormat(format : "FromFutureToBrowserFormat" | "FromBrowserToFutureFormat") {
+		if(format === "FromFutureToBrowserFormat") {
+			return (number :number, factor :number) => (number * factor).toString();
+		} else {
+			return (number :number, factor :number) => (number / factor).toFixed(1);
+		}
+	}
+
+	static FromFutureToBrowserFormat() {
+
+	}
+
+	static FromBrowserToFutureFormat(type :string, value :string) {
+
+		let toCorrectFormat = CDesign.ToRightFormat("FromBrowserToFutureFormat");
+
+		if(type == "ONCHANGE=") {
+			if(value.indexOf("\"") != 0) {
+				value = "\"" + value + "\"";
+			}
+
+		} else if(type == "XPOS=") {
+			value = "" + toCorrectFormat(parseFloat(value), CDesign.xfactor);
+		} else if(type == "YPOS=") {
+			value = "" + toCorrectFormat(parseFloat(value), CDesign.yfactor);
+		} else if(type == "WIDTH=") {
+			value = "" + toCorrectFormat(parseFloat(value), CDesign.xfactor);
+		} else if(type == "HEIGHT=") {
+			value = "" + toCorrectFormat(parseFloat(value), CDesign.yfactor);
+		}
+		return value;
 	}
 
 	static CreateElements(text :TextDocument, tablenumber :string, page:string) {
 		let i = 0;
 		let html_text = "";
 		let css_text = "";
-		const xFactor = 5;
-		const widthFactor = (150/30);
-		const yFactor = 40;//(1080/28);
 
 		let pages_text :Map<string, string> = new Map();
 
@@ -111,8 +172,10 @@ export class CDesignWebConstructor {
 				}
 
 				if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
-					let xpos :string|number = (parseFloat(m[1]) * xFactor);
-					if(xpos % 5 == 4) { xpos = xpos + 1; }
+					let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
+					
+					let xpos :string|number = futuretobrowser(parseFloat(m[1]), CDesign.xfactor);
+					//if(xpos % 5 == 4) { xpos = xpos + 1; }
 					let xposlabel :string|number = xpos;
 					let xposTextlabel :string|number = xpos;
 
@@ -129,24 +192,24 @@ export class CDesignWebConstructor {
 						xposTextlabel = m[1];
 					} else {
 						if(parseInt(mType[1]) == 15) {
-							xposlabel += 20;
+							xposlabel = parseFloat(xposlabel) + 20;
 							xposlabel = "" + xposlabel + "px";
 						}
-						xposTextlabel -= (9 + (7 * name.length));
+						xposTextlabel = parseFloat(xposTextlabel) - (9 + (7 * name.length));
 						xposTextlabel = xposTextlabel + "px";
 						xpos = "" + xpos + "px";
 					}
-					let ypos :string|number = (parseFloat(mY[1]) * yFactor);
+					let ypos :string|number = futuretobrowser(parseFloat(mY[1]), CDesign.yfactor);
 					if(mY[1].search("%") >= 0) {
 						ypos = mY[1]; 
 					} else {
 						ypos = "" + ypos + "px";
 					}
 					if(mY[1].charAt(mY[1].length - 1) == "B") {
-						ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "%";
+						ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "vw";
 					}
 					
-					let width :string|number = (parseFloat(mWidth[1]) * xFactor);
+					let width :string|number = (parseFloat(mWidth[1]) * CDesign.xfactor);
 					if(mWidth[1].search("%") >= 0) {
 						width = mWidth[1];
 					} else {
@@ -154,7 +217,11 @@ export class CDesignWebConstructor {
 					}
 
 					if(mWidth[1].charAt(mWidth[1].length - 1) == "B") {
-						width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "%";
+						if(mWidth[1].substring(0, mWidth[1].length - 1) != "0") {
+							width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "vw";
+						} else {
+							width = "100vw";
+						}
 					}
 					
 					let height :string|number = (parseFloat(mHeight[1]) * 20);
@@ -165,7 +232,7 @@ export class CDesignWebConstructor {
 						height = "" + height + "px";
 					}
 					if(mHeight[1].charAt(mHeight[1].length - 1) == "B") {
-						height = (parseFloat(mHeight[1].substring(0, mHeight[1].length - 1)) * 100)  + "%";
+						height = (parseFloat(mHeight[1].substring(0, mHeight[1].length - 1)) * 100)  + "vw";
 					}
 					/*
 						x:0 - y:0 -> x:0 - y:0
@@ -183,57 +250,49 @@ export class CDesignWebConstructor {
 					let styleLabelCheckbox = `style="cursor:pointer; top: ${ypos}; left: ${xposlabel}; width: 1000px; position: absolute;"`;
 					let styleLabelTextfield = `style="cursor:pointer; top: ${ypos}; left: ${xposTextlabel}; position: absolute;"`;
 
+					let html_text = "";
 					if(parseInt(mType[1]) == 15) {
-						let html_text = `<div onClick="showElementDialog(event)" 
-						onClick="showElementDialog(event)"
-						data-saved="1" 
-						data-column="${mColumn[1]}" 
-						data-onchange="${escape_HTML(onchangeText)}" 
-						data-nexttab="${mNEXTTABPOS}" 
-						data-page="${mPage[1]}" 
-						data-type="${mType[1]}" 
-						data-nameposition="${mNameposition}" 
-						data-visible="${mHidden[1]}" 
-						data-readonly="${mREADONLY}" 
-						data-name="${elementName}"
-						class="Testungen" ${styleCheckbox}
-						id="${tablenumber+"-"+mColumn[1]}"
-						><input type="checkbox">${name}</div>`;
-						pages_text.set(mPage[1], pages_text.get(mPage[1]) + html_text);
+						html_text = `<div 
+							${styleCheckbox}
+							DATA_TO_SET_IN_ELEMENT
+							>
+							<input type="checkbox">${name}
+						</div>`;
+						
 					} else if(parseInt(mType[1]) == 4) {
-						let html_text = `<div 
-						onClick="showElementDialog(event)"
-						data-saved="1" 
-						data-column="${mColumn[1]}" 
-						data-onchange="${escape_HTML(onchangeText)}" 
-						data-nexttab="${mNEXTTABPOS}" 
-						data-page="${mPage[1]}" 
-						data-type="${mType[1]}" 
-						data-nameposition="${mNameposition}" 
-						data-visible="${mHidden[1]}" 
-						data-readonly="${mREADONLY}" 
-						data-name="${elementName}" 
-						class="Testungen" id="${tablenumber+"-"+mColumn[1]}" ${styleSeperator}>${name}</div>`;
-						pages_text.set(mPage[1], pages_text.get(mPage[1]) + html_text);
-					} else {
-						let class_name = name.replace(" ", "");
-						let html_text = `<div 
-						onClick="showElementDialog(event)"
-						data-saved="1" 
-						data-column="${mColumn[1]}" 
-						data-onchange="${escape_HTML(onchangeText)}" 
-						data-nexttab="${mNEXTTABPOS}" 
-						data-page="${mPage[1]}" 
-						data-type="${mType[1]}" 
-						data-nameposition="${mNameposition}" 
-						data-visible="${mHidden[1]}" 
-						data-readonly="${mREADONLY}" 
-						data-name="${elementName}" 
-						class="Testungen ${class_name}" ${styleTextField} id="${tablenumber+"-"+mColumn[1]}"><div>${elementName}</div></div>`;
+						html_text = `<div ${styleSeperator}
+							DATA_TO_SET_IN_ELEMENT>
+							<div>${name}</div>
+						</div>`;
 
-						let newHtml = pages_text.get(mPage[1]) + html_text;
-						pages_text.set(mPage[1], newHtml);
+
+					} else {
+						html_text = `<div ${styleTextField} 
+							DATA_TO_SET_IN_ELEMENT>
+							<div>${elementName}</div>
+						</div>
+						`;
+					
 					}
+					html_text = html_text.replace("DATA_TO_SET_IN_ELEMENT", 
+					`
+						onClick="showElementDialog(event)"
+						data-saved="1" 
+						data-column="${mColumn[1]}" 
+						data-onchange="${escape_HTML(onchangeText)}" 
+						data-nexttab="${mNEXTTABPOS}" 
+						data-page="${mPage[1]}" 
+						data-type="${mType[1]}" 
+						data-nameposition="${mNameposition}" 
+						data-visible="${mHidden[1]}" 
+						data-readonly="${mREADONLY}" 
+						data-name="${elementName}" 
+						id="${tablenumber}-${mColumn[1]}"
+						class="Testungen" 
+					`);
+
+					let newHtml = pages_text.get(mPage[1]) + html_text;
+					pages_text.set(mPage[1], newHtml);
 				}
 			}
 			i++;
