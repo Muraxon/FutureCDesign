@@ -149,7 +149,10 @@ export function activate(context: ExtensionContext) {
 							for(let x = 0; x < messages[y].values.length; x++) {
 								let text = new_editor.document.getText();
 								let index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
-								
+								if(messages[y].type == 45) {
+									index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
+								}
+								console.log(index);
 								if(index >= 0) {
 									let endofLine = text.indexOf("\n", index + 1);
 									let indexStart = text.indexOf(messages[y].values[x].type, index + 1);
@@ -206,7 +209,7 @@ export function activate(context: ExtensionContext) {
 											})
 										}
 									} else {
-										if(indexStart >= 0) {
+										if(indexStart >= 0 && indexStart < endofLine) {
 											let tempindexStart = indexStart + messages[y].values[x].type.length;
 											let indexEnd = text.indexOf(";", tempindexStart);
 	
