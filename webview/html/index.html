@@ -157,6 +157,10 @@
 			visibility: visible;
 			opacity: 1;
 		}
+
+		.text_of_element {
+			width: fit-content;
+		}
 	</style>
 </head>
 
@@ -320,7 +324,6 @@
 	<input type="button" id="saveAllButton" style="display: none;" class="saveAllButton" value="Alle Elemente speichern"
 		onclick="Postmessage(true)">
 
-
 	<script>
 		const vscode = acquireVsCodeApi();
 		let table = TABLE_NUMBER;
@@ -385,17 +388,14 @@
 						if(element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
 
 
-							let width = measureText(element.children[0].innerHTML, 13);
 							if(nameposition == 1) {
 								element.children[0].style.left = "0px";
 								element.children[0].style.position = "relative";
-								element.children[0].style.width = "" + (width + 20) + "px";
 								element.children[0].style.top = "-20px";
 							} else {
 								element.children[0].style.top = "0px";
-								element.children[0].style.left = "" + (-width - 5) + "px";
+								element.children[0].style.left = "-" + (element.children[0].width + 5) + "px";
 								element.children[0].style.position = "relative";
-								element.children[0].style.width = "" + (width + 20) + "px";
 							}
 
 						}
@@ -522,6 +522,8 @@
 				vscode.postMessage([{
 					command: "removeElement",
 					table: table,
+					type: "" + event.target.getAttribute("data-type"),
+					name: "" + event.target.getAttribute("data-name"),
 					column: "" + event.target.getAttribute("data-column")
 				}])
 				document.getElementById(activeIndex).removeChild(event.target);
@@ -536,24 +538,6 @@
 				$("#linkedtable_info").fadeOut(600);
 			}
 		}
-
-		function measureText(str, fontSize = 10) {
-			const widths = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.2796875,0.2765625,0.3546875,0.5546875,0.5546875,0.8890625,0.665625,0.190625,0.3328125,0.3328125,0.3890625,0.5828125,0.2765625,0.3328125,0.2765625,0.3015625,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.5546875,0.2765625,0.2765625,0.584375,0.5828125,0.584375,0.5546875,1.0140625,0.665625,0.665625,0.721875,0.721875,0.665625,0.609375,0.7765625,0.721875,0.2765625,0.5,0.665625,0.5546875,0.8328125,0.721875,0.7765625,0.665625,0.7765625,0.721875,0.665625,0.609375,0.721875,0.665625,0.94375,0.665625,0.665625,0.609375,0.2765625,0.3546875,0.2765625,0.4765625,0.5546875,0.3328125,0.5546875,0.5546875,0.5,0.5546875,0.5546875,0.2765625,0.5546875,0.5546875,0.221875,0.240625,0.5,0.221875,0.8328125,0.5546875,0.5546875,0.5546875,0.5546875,0.3328125,0.5,0.2765625,0.5546875,0.5,0.721875,0.5,0.5,0.5,0.3546875,0.259375,0.353125,0.5890625]
-			const avg = 0.5279276315789471
-			return str
-				.split('')
-				.map(c => c.charCodeAt(0) < widths.length ? widths[c.charCodeAt(0)] : avg)
-				.reduce((cur, acc) => acc + cur) * fontSize
-		}
-
-		function displayTextWidth(element, font) {
-            var myCanvas = displayTextWidth.canvas || (displayTextWidth.canvas = document.createElement("canvas"));
-            var context = myCanvas.getContext("2d");
-            context.font = font;
-            var metrics = context.measureText(element.innerHTML);
-            return metrics.width;
-        };
-
 	</script>
 
 	<script type="module">
@@ -596,21 +580,17 @@
 			v.forEach((value) => {
 				if(value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
 					if(value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
-						let width = measureText(value.children[0].innerHTML, 13);
-						
-						value.children[0].style.left = "" + (-width - 5) + "px";
+						value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
 						value.children[0].style.position = "relative";
-						value.children[0].style.width = "" + (width + 20) + "px";
 					}
 				}
 
 				if(value.getAttribute("data-nameposition") == 1) {
 					value.children[0].style.left = "0px";
 					value.children[0].style.position = "relative";
-					value.children[0].style.width = "290px";
 					value.children[0].style.top = "-20px";
 				}
-
+				
 				dragmove(value, value, onStart, onEnd);
 			});
 

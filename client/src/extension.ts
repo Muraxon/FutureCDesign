@@ -124,14 +124,15 @@ export function activate(context: ExtensionContext) {
 							let text = new_editor_.document.getText();
 
 							let indexFound = text.indexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
+							
 							if(indexFound >= 0) {
 								let endofLine = text.indexOf("\n", indexFound + 1);
 								new_editor_.edit((editBuilder) => {
 									let pos = new_editor_.document.positionAt(indexFound);
 									let pos_end = new_editor_.document.positionAt(endofLine);
 									let range = new Range(pos, pos_end);
-									new_editor_.revealRange(range);
 									editBuilder.delete(range);
+									new_editor_.revealRange(range, TextEditorRevealType.InCenter);
 								});
 							}
 							break;
@@ -155,6 +156,11 @@ export function activate(context: ExtensionContext) {
 								console.log(index);
 								if(index >= 0) {
 									let endofLine = text.indexOf("\n", index + 1);
+									let endofLineTemp = text.indexOf("//", index + 1);
+									if(endofLineTemp < endofLine) {
+										endofLine = endofLineTemp;
+									}
+
 									let indexStart = text.indexOf(messages[y].values[x].type, index + 1);
 									if(messages[y].values[x].text.length > 0) {
 	

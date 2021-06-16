@@ -10,6 +10,7 @@ function escape_HTML(html_str :string) {
 export class CDesign {
 	public static get xfactor() { return (150/30); }
 	public static get yfactor() { return 40; }
+	public static get heightfactor() { return 20; }
 
 	constructor() {
 
@@ -209,7 +210,7 @@ export class CDesign {
 						ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "vw";
 					}
 					
-					let width :string|number = (parseFloat(mWidth[1]) * CDesign.xfactor);
+					let width :string|number = futuretobrowser(parseFloat(mWidth[1]), CDesign.xfactor);
 					if(mWidth[1].search("%") >= 0) {
 						width = mWidth[1];
 					} else {
@@ -224,7 +225,7 @@ export class CDesign {
 						}
 					}
 					
-					let height :string|number = (parseFloat(mHeight[1]) * 20);
+					let height :string|number = (parseFloat(mHeight[1]) * CDesign.heightfactor);
 					height--;
 					if(mHeight[1].search("%") >= 0) {
 						height = mHeight[1];
@@ -247,22 +248,20 @@ export class CDesign {
 					let styleTextField = `style="cursor:pointer; resize:none; background-color: white; height: ${height}; top: ${ypos}; left: ${xpos}; width: ${width}; position: absolute; border: 1px solid #7a7a7a;"`;
 					let styleCheckbox = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; position: absolute;"`;
 					let styleSeperator = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; width: ${width}; height: 0px; position: absolute; border: 1px solid black;"`;
-					let styleLabelCheckbox = `style="cursor:pointer; top: ${ypos}; left: ${xposlabel}; width: 1000px; position: absolute;"`;
-					let styleLabelTextfield = `style="cursor:pointer; top: ${ypos}; left: ${xposTextlabel}; position: absolute;"`;
-
+					
 					let html_text = "";
 					if(parseInt(mType[1]) == 15) {
 						html_text = `<div 
 							${styleCheckbox}
 							DATA_TO_SET_IN_ELEMENT
 							>
-							<input class="text_of_element" type="checkbox">${name}
+							<input class="text_of_element" type="checkbox">${elementName}
 						</div>`;
 						
 					} else if(parseInt(mType[1]) == 4) {
 						html_text = `<div ${styleSeperator}
 							DATA_TO_SET_IN_ELEMENT>
-							<div class="text_of_element">${name}</div>
+							<div class="text_of_element">${elementName}</div>
 						</div>`;
 
 
@@ -338,8 +337,29 @@ export class CDesign {
 			x[i].style.display = "none";  
 		  }
 		  activeIndex = cityName;
-		  document.getElementById(cityName).style.display = "block";  
+		  document.getElementById(cityName).style.display = "block";
+
+		  let v = document.querySelectorAll(".Testungen");
+		  v.forEach(value => {
+			let temp = value.style.width;
+			value.style.width = "10000px";
+
+			if(value.getAttribute("data-nameposition") == 1) {
+				value.children[0].style.left = "0px";
+				value.children[0].style.position = "relative";
+				value.children[0].style.top = "-20px";
+			} else {
+				if(value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
+					value.children[0].style.width = "fit-content";
+					value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
+					value.children[0].style.width = "" + (value.children[0].offsetWidth + 5) + "px";
+					value.children[0].style.position = "relative";
+				}
+			}
+			value.style.width = temp;
+		  });
 		}
+		openCity(activeIndex);
 		</script>
 		`;
 		return {
