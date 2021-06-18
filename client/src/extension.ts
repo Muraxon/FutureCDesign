@@ -153,7 +153,7 @@ export function activate(context: ExtensionContext) {
 								if(messages[y].type == 45) {
 									index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
 								}
-								console.log(index);
+
 								if(index >= 0) {
 									let endofLine = text.indexOf("\n", index + 1);
 									let endofLineTemp = text.indexOf("//", index + 1);

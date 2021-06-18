@@ -72,7 +72,7 @@ export class CDesign {
 		} else if(type == "WIDTH=") {
 			value = "" + toCorrectFormat(parseFloat(value), CDesign.xfactor);
 		} else if(type == "HEIGHT=") {
-			value = "" + toCorrectFormat(parseFloat(value), CDesign.yfactor);
+			value = "" + toCorrectFormat(parseFloat(value), CDesign.heightfactor);
 		}
 		return value;
 	}
@@ -103,7 +103,7 @@ export class CDesign {
 					}
 				}
 
-				let regHidden = /VISIBLE=(1)/gm;
+				let regHidden = /VISIBLE=(1|0)/gm;
 				let mHidden = regHidden.exec(linetext.text);
 				
 				let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
@@ -226,7 +226,7 @@ export class CDesign {
 					}
 					
 					let height :string|number = (parseFloat(mHeight[1]) * CDesign.heightfactor);
-					height--;
+					//height--;
 					if(mHeight[1].search("%") >= 0) {
 						height = mHeight[1];
 					} else {
@@ -245,14 +245,34 @@ export class CDesign {
 					*/
 
 
-					let styleTextField = `style="cursor:pointer; resize:none; background-color: white; height: ${height}; top: ${ypos}; left: ${xpos}; width: ${width}; position: absolute; border: 1px solid #7a7a7a;"`;
-					let styleCheckbox = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; position: absolute;"`;
-					let styleSeperator = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; width: ${width}; height: 0px; position: absolute; border: 1px solid black;"`;
+					let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${height}; top: ${ypos}; left: ${xpos}; width: ${width}; position: absolute; border: 1px solid #7a7a7a; opacity: <OPACITY>;"`;
+					let styleCheckboxDiv = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; position: absolute; opacity: <OPACITY>;"`;
+					let styleCheckbox = `style="cursor:pointer; background-color: <BACKGROUNDCOLOR>;"`;
+					let styleSeperator = `style="cursor:pointer; top: ${ypos}; left: ${xpos}; width: ${width}; height: 0px; position: absolute; border: 1px solid black; opacity: <OPACITY>;"`;
 					
+					if(mHidden[1] == "0") {
+						styleTextField = styleTextField.replace("<OPACITY>", "0.5");
+						styleCheckbox = styleCheckbox.replace("<OPACITY>", "0.5");
+						styleCheckboxDiv = styleCheckboxDiv.replace("<OPACITY>", "0.5");
+						styleSeperator = styleSeperator.replace("<OPACITY>", "0.5");
+					}
+					
+					if(mREADONLY == "1") {
+						styleTextField = styleTextField.replace("<BACKGROUNDCOLOR>", "black");
+						styleCheckbox = styleCheckbox.replace("<BACKGROUNDCOLOR>", "black");
+						styleCheckboxDiv = styleCheckboxDiv.replace("<BACKGROUNDCOLOR>", "black");
+						styleSeperator = styleSeperator.replace("<BACKGROUNDCOLOR>", "black");
+					} else {
+						styleTextField = styleTextField.replace("<BACKGROUNDCOLOR>", "white");
+						styleCheckbox = styleCheckbox.replace("<BACKGROUNDCOLOR>", "white");
+						styleCheckboxDiv = styleCheckboxDiv.replace("<BACKGROUNDCOLOR>", "white");
+						styleSeperator = styleSeperator.replace("<BACKGROUNDCOLOR>", "white");
+					}
+
 					let html_text = "";
 					if(parseInt(mType[1]) == 15) {
 						html_text = `<div 
-							${styleCheckbox}
+							${styleCheckboxDiv}
 							DATA_TO_SET_IN_ELEMENT
 							>
 							<input class="text_of_element" type="checkbox">${elementName}
@@ -286,6 +306,8 @@ export class CDesign {
 						data-visible="${mHidden[1]}" 
 						data-readonly="${mREADONLY}" 
 						data-name="${elementName}" 
+						data-height="${mHeight[1]}" 
+						data-width="${mWidth[1]}" 
 						class="Testungen" id="${tablenumber+"-"+mColumn[1]}"
 					`);
 
@@ -303,7 +325,7 @@ export class CDesign {
 		pages_text.forEach((val, key) => {
 			button_html += `<button style="top: -22px; position: absolute; left: ${((i + 1) * 25)}px" class="w3-bar-item w3-button" onclick="openCity('${key}')">${key}</button>`
 			html_text = html_text + `<div id="${key}" class="w3-container city"`
-			if(aktiveKey < 0) {
+			if((aktiveKey < 0) || (aktiveKey > 0 && aktiveKey > parseInt(key))) {
 				aktiveKey = parseInt(key);
 			}
 			if(i > 0) {
@@ -359,6 +381,7 @@ export class CDesign {
 			value.style.width = temp;
 		  });
 		}
+		openCity(activeIndex);
 		openCity(activeIndex);
 		</script>
 		`;

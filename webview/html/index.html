@@ -167,6 +167,18 @@
 <body style="color: black; background-color: #bfdbff;">
 	<script src="JQUERY_PATH"></script>
 
+	<div id="AusblendenWarnung" class="modal">
+		<div class="modal-content animate">
+			<div class="additionalInfoDiv">
+				ACHTUNG!!!<br>
+				Das löschen eines Elements blendet es nicht aus. Um ein Element aus dem Dialog auszublenden, muss man das Element auf VISIBLE=0 setzen<br><br>
+				Warnung nicht nochmal anzeigen: <input type="checkbox" name="showWarningAgain" id="showWarningAgain">
+				<button onclick="document.getElementById('AusblendenWarnung').style.display = 'none';">OK</button>
+			</div>
+		</div>
+	</div>
+
+
 	<div id="id01" class="modal">
 
 		<div class="modal-content animate">
@@ -295,7 +307,10 @@
 								<option value="1">Ja</option>
 								<option value="0">Nein</option>
 							</select></td>
-							<td></td>
+							<td>Breite:<input type="number" name="elementwidth" id="elementwidth"></td>
+						</tr>
+						<tr>
+							<td>Höhe:<input step="0.1" type="number" name="elementheight" id="elementheight"><button id="standardwidth" onclick="document.getElementById('elementheight').value='1.2'">Standard</button></td>
 						</tr>
 					</tbody>
 				</table>
@@ -325,6 +340,10 @@
 		onclick="Postmessage(true)">
 
 	<script>
+		const xFactor = 5;
+		const yFactor = 40;
+		const heightFactor = 20;
+		
 		const vscode = acquireVsCodeApi();
 		let table = TABLE_NUMBER;
 
@@ -338,6 +357,7 @@
 			if (!saveAll) {
 				let element = document.getElementById("" + table + "-" + document.getElementById("column").value);
 				elements.push(element);
+				
 			} else {
 				elements = document.querySelectorAll(".notsaved");
 			}
@@ -353,6 +373,8 @@
 				let visible = "";
 				let readonly = "";
 				let name = "";
+				let elementwidth = "";
+				let elementheight = "";
 				if (saveAll) {
 					column = element.getAttribute("data-column");
 					onchange = element.getAttribute("data-onchange");
@@ -363,6 +385,8 @@
 					visible = element.getAttribute("data-visible");
 					readonly = element.getAttribute("data-readonly");
 					name = element.getAttribute("data-name");
+					elementheight = element.getAttribute("data-height");
+					elementwidth = element.getAttribute("data-width");
 				} else {
 					column = document.getElementById("column").value;
 					onchange = document.getElementById("onchange").value;
@@ -373,6 +397,8 @@
 					visible = document.getElementById("visible").value;
 					readonly = document.getElementById("readonly").value;
 					name = document.getElementById("name").value;
+					elementheight = document.getElementById("elementheight").value;
+					elementwidth = document.getElementById("elementwidth").value;
 
 					element.setAttribute("data-column", column);
 					element.setAttribute("data-onchange", onchange);
@@ -383,6 +409,8 @@
 					element.setAttribute("data-visible", visible);
 					element.setAttribute("data-readonly", readonly);
 					element.setAttribute("data-name", name);
+					element.setAttribute("data-height", elementheight);
+					element.setAttribute("data-width", elementwidth);
 					if (type != 15) {
 						element.children[0].innerHTML = name;
 						if(element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
@@ -399,9 +427,33 @@
 							}
 
 						}
+
+						if(readonly == 0) {
+							element.style.backgroundColor = "white";
+						} else {
+							element.style.backgroundColor = "black";
+						}
+
 					} else {
-						element.innerHTML = `<input type="checkbox">` + name;
+						let style = `style="background-color: <BACKGROUNDCOLOR>;"`;
+						if(readonly == 0) {
+							style.replace("<BACKGROUNDCOLOR>", "white");
+						} else {
+							style.replace("<BACKGROUNDCOLOR>", "black");
+						}
+
+						element.innerHTML = `<input ${style} type="checkbox">` + name;
 					}
+
+					if(visible == 0) {
+						element.style.opacity = "0.5";
+					} else {
+						element.style.opacity = "1";
+					}
+					
+					let width = "" + (parseFloat(elementwidth) * xFactor).toFixed(1) + "px";
+					element.style.width = width;
+					element.style.height = "" + (parseFloat(elementheight) * heightFactor).toFixed(1) + "px";
 				}
 
 				element.className = element.className.replace(" notsaved", "");
@@ -427,14 +479,14 @@
 					type: "YPOS=",
 					text: element.style.top
 				})
-				// arr.push({
-				// 	type: "WIDTH=",
-				// 	text: element.style.width
-				// })
-				// arr.push({
-				// 	type: "HEIGHT=",
-				// 	text: "1.2"
-				// })
+				arr.push({
+					type: "WIDTH=",
+					text: element.style.width
+				})
+				arr.push({
+					type: "HEIGHT=",
+					text: element.style.height
+				})
 
 				if (!saveAll) {
 					arr.push({
@@ -494,8 +546,6 @@
 		function showElementDialog(event) {
 			if (event.ctrlKey && !event.altKey && !event.shiftKey) {
 				let target = event.target;
-				console.log(target.className.search("text_of_element"));
-				console.log(target.className);
 				if (target.className.search("text_of_element") >= 0) {
 					target = event.target.parentElement;
 				}
@@ -509,6 +559,8 @@
 				document.getElementById("visible").value = target.getAttribute("data-visible");
 				document.getElementById("readonly").value = target.getAttribute("data-readonly");
 				document.getElementById("name").value = target.getAttribute("data-name");
+				document.getElementById("elementheight").value = target.getAttribute("data-height");
+				document.getElementById("elementwidth").value = target.getAttribute("data-width");
 
 				document.getElementById('id01').style.display = 'block';
 
@@ -519,6 +571,11 @@
 				}
 
 			} else if (event.ctrlKey && event.altKey && event.shiftKey) {
+
+				if(document.getElementById('showWarningAgain').checked == false) {
+					document.getElementById('AusblendenWarnung').style.display = "block";
+				}
+
 				vscode.postMessage([{
 					command: "removeElement",
 					table: table,
@@ -598,7 +655,6 @@
 			window.addEventListener("click", (event) => {
 				if (event.ctrlKey && event.altKey && !event.shiftKey) {
 					event.stopPropagation();
-					const xFactor = 5;
 
 					let newElement = document.createElement("div");
 					newElement.style.backgroundColor = "white";
