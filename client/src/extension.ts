@@ -70,10 +70,9 @@ export function activate(context: ExtensionContext) {
 
 			let config = workspace.getConfiguration();
 			let designzuordnung = config.get<Object>("FutureCDesign.Designzuordnung");
-			
+			let showHelp = config.get<boolean>("FutureCDesign.ShowHelpFirstTime");
+
 			filename = filename.replace(workspace.workspaceFolders[0].uri.fsPath + "\\", "");
-			console.log(filename);
-			console.log();
 
 			if(designzuordnung[filename]) {
 
@@ -140,7 +139,6 @@ export function activate(context: ExtensionContext) {
 				html_text = html_text.replace("HELP_PNG_PATH", help_pic.toString());
 				
 				panel.webview.html = html_text;
-	
 				panel.webview.onDidReceiveMessage(async (messages) => {
 	
 					for(let y = 0; y < messages.length; y++) {
@@ -292,7 +290,13 @@ export function activate(context: ExtensionContext) {
 					}
 				})
 	
-					
+				setTimeout(() => {
+					workspace.getConfiguration().update("FutureCDesign.ShowHelpFirstTime", false);
+					panel.webview.postMessage({
+						command: "showHelp",
+						showHelp: showHelp
+					});
+				}, 4000);
 				panel.onDidDispose(
 					() => {
 						// When the panel is closed, cancel any future updates to the webview content

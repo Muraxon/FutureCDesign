@@ -92,17 +92,6 @@
 			box-sizing: border-box;
 		}
 
-		input[type=button] {
-			background-color: rgb(14, 99, 156);
-			border: none;
-			color: white;
-			padding: 15px 32px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-		}
-
 		.notsaved {
 			background-color: lightgrey !important;
 		}
@@ -171,7 +160,142 @@
 			width: fit-content;
 		}
 
-		
+		.OK-Button:hover {
+			background-color: rgb(45, 156, 77);
+		}
+
+		.OK-Button {
+			appearance: none;
+			background-color: rgb(45, 159, 78);
+			border-bottom-color: rgba(27, 31, 35, 0.15);
+			border-bottom-left-radius: 6px;
+			border-bottom-right-radius: 6px;
+			border-bottom-style: solid;
+			border-bottom-width: 1px;
+			border-image-outset: 0;
+			border-image-repeat: stretch;
+			border-image-slice: 100%;
+			border-image-source: none;
+			border-image-width: 1;
+			border-left-color: rgba(27, 31, 35, 0.15);
+			border-left-style: solid;
+			border-left-width: 1px;
+			border-right-color: rgba(27, 31, 35, 0.15);
+			border-right-style: solid;
+			border-right-width: 1px;
+			border-top-color: rgba(27, 31, 35, 0.15);
+			border-top-left-radius: 6px;
+			border-top-right-radius: 6px;
+			border-top-style: solid;
+			border-top-width: 1px;
+			box-shadow: rgba(27, 31, 35, 0.1) 0px 1px 0px 0px, rgba(255, 255, 255, 0.03) 0px 1px 0px 0px inset;
+			box-sizing: border-box;
+			color: rgb(255, 255, 255);
+			cursor: pointer;
+			display: inline-block;
+			font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+			font-feature-settings: normal;
+			font-kerning: auto;
+			font-language-override: normal;
+			font-optical-sizing: auto;
+			font-size: 14px;
+			font-size-adjust: none;
+			font-stretch: 100%;
+			font-style: normal;
+			font-variant: normal;
+			font-variant-alternates: normal;
+			font-variant-caps: normal;
+			font-variant-east-asian: normal;
+			font-variant-ligatures: normal;
+			font-variant-numeric: normal;
+			font-variant-position: normal;
+			font-variation-settings: normal;
+			font-weight: 500;
+			line-height: 20px;
+			margin-bottom: 0px;
+			margin-left: 0px;
+			margin-right: 0px;
+			margin-top: 0px;
+			overflow: visible;
+			overflow-wrap: break-word;
+			overflow-x: visible;
+			overflow-y: visible;
+			padding-bottom: 5px;
+			padding-left: 16px;
+			padding-right: 16px;
+			padding-top: 5px;
+			position: relative;
+			text-decoration: rgb(255, 255, 255);
+			text-decoration-color: rgb(255, 255, 255);
+			text-decoration-line: none;
+			text-decoration-style: solid;
+			text-decoration-thickness: auto;
+			transition-delay: 0s;
+			transition-duration: 0.1s;
+			transition-property: color, background-color, border-color;
+			transition-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
+			user-select: none;
+			vertical-align: middle;
+			white-space: nowrap;
+		}
+
+		.Cancel-Button:hover {
+			color: rgb(250, 251, 252) !important;
+			background-color: rgb(215, 58, 73) !important;
+		}
+		.Cancel-Button {
+			appearance: none;
+			background-color: rgb(250, 251, 252);
+			border-bottom-color: rgba(27, 31, 35, 0.15);
+			border-bottom-left-radius: 6px;
+			border-bottom-right-radius: 6px;
+			border-bottom-style: solid;
+			border-bottom-width: 1px;
+			border-image-outset: 0;
+			border-image-repeat: stretch;
+			border-image-slice: 100%;
+			border-image-source: none;
+			border-image-width: 1;
+			border-left-color: rgba(27, 31, 35, 0.15);
+			border-left-style: solid;
+			border-left-width: 1px;
+			border-right-color: rgba(27, 31, 35, 0.15);
+			border-right-style: solid;
+			border-right-width: 1px;
+			border-top-color: rgba(27, 31, 35, 0.15);
+			border-top-left-radius: 6px;
+			border-top-right-radius: 6px;
+			border-top-style: solid;
+			border-top-width: 1px;
+			box-shadow: rgba(27, 31, 35, 0.04) 0px 1px 0px 0px, rgba(255, 255, 255, 0.25) 0px 1px 0px 0px inset;
+			box-sizing: border-box;
+			color: rgb(215, 58, 73);
+			cursor: pointer;
+			display: block;
+			float: right;
+			font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 20px;
+			list-style-image: none;
+			list-style-position: outside;
+			list-style-type: none;
+			margin-left: 16px;
+			overflow-wrap: break-word;
+			padding-bottom: 5px;
+			padding-left: 16px;
+			padding-right: 16px;
+			padding-top: 5px;
+			position: relative;
+			transition-delay: 0s;
+			transition-duration: 0.2s;
+			transition-property: color, background-color, border-color;
+			transition-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
+			user-select: none;
+			vertical-align: middle;
+			white-space: nowrap;
+		}
+
 		.helpButton {
 			width: 30px;
 			position: fixed;
@@ -182,6 +306,17 @@
 			z-index: 10;
 		}
 
+		.keybindingStyle {
+			border: 1px solid #aaa;
+			border-radius: 0.2em;
+			box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.1);
+			background-color: #f9f9f9;
+			background-image: linear-gradient(to bottom, #eee, #f9f9f9, #eee);
+			color: #000;
+			padding: 0.1em 0.3em;
+			font-family: inherit;
+			font-size: 0.85em;
+		}
 	</style>
 </head>
 
@@ -190,16 +325,50 @@
 
 	<div class="helpButton" onclick="showHelp();"><img src="HELP_PNG_PATH" alt=""></div>
 	<div id="helpDiv" class="modal">
-		<div class="modal-content-100 animate">
+		<div class="modal-content animate">
 			<div class="basicInfoForElement">
+				<div id="helpGreetings" style="display: none;">
+					<p>
+						Herzlich Willkommen zum FutureC Designer! (Erstentwurf)
+					</p>
+					<p>
+						Dies ist die Hilfe, die das erste mal geöffnet wird, sobald man den Designer öffnet. Später kann man diesen Dialog über das Fragezeichen oben rechts öffnen. Um sich die verfügbaren Keybindings erneut anzuschauen.
+					</p>
+				</div>
 				<p>
-					TODO
+					Keybindings:
 				</p>
+				<kbd class="keyboard-key nowrap keybindingStyle">Ctrl</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">L-Maus</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">Element</kbd>: Öffnet einen Editdialog mit der Möglichkeit mehrere Eigenschaften eines Elements anzupassen
 				<br>
-				<p>
-					TODO
-				</p>
-				<button onclick="document.getElementById('helpDiv').style.display = 'none';">OK</button>
+				<br>
+
+
+				<kbd class="keyboard-key nowrap keybindingStyle">Ctrl</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">⇧ Shift</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">Alt</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">L-Maus</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">Element</kbd>: Entfernt ein Element aus dem Designer und aus dem Source-File
+				<br>
+				<br>
+
+
+				<kbd class="keyboard-key nowrap keybindingStyle">Ctrl</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">Alt</kbd>
+				+
+				<kbd class="keyboard-key nowrap keybindingStyle">L-Maus</kbd>: Erzeugt ein neues Element. Danach wird man wird nach der Spaltennummer abgefragt um diese in das neu erzeugte Element zu speichern.
+				<br>
+				<br>
+				<button class="OK-Button"
+					onclick="document.getElementById('helpDiv').style.display = 'none'; document.getElementById('helpGreetings').style.display = 'none';">OK</button>
 			</div>
 		</div>
 	</div>
@@ -208,9 +377,11 @@
 		<div class="modal-content animate">
 			<div class="additionalInfoDiv">
 				ACHTUNG!!!<br>
-				Das löschen eines Elements blendet es nicht aus. Um ein Element aus dem Dialog auszublenden, muss man das Element auf VISIBLE=0 setzen<br><br>
+				Das löschen eines Elements blendet es nicht aus. Um ein Element aus dem Dialog auszublenden, muss man
+				das Element auf VISIBLE=0 setzen<br><br>
 				Warnung nicht nochmal anzeigen: <input type="checkbox" name="showWarningAgain" id="showWarningAgain">
-				<button onclick="document.getElementById('AusblendenWarnung').style.display = 'none';">OK</button>
+				<button class="OK-Button"
+					onclick="document.getElementById('AusblendenWarnung').style.display = 'none';">OK</button>
 			</div>
 		</div>
 	</div>
@@ -294,8 +465,8 @@
 				<option value="226">MONTHCALENDAR </option>
 				<option value="227">LINK_COMBO_DOCUMENT </option>
 				<option value="228">RB_LINK_COMBO_TREE </option>
-	
-	
+
+
 			</select>
 			<div id="linkedtable_info" style="display: none;" class="additionalInfoDiv">
 				<p style="margin: 0px 0px 20px 0px;">Zusatzinfos zur LinkedTable:</p>
@@ -306,17 +477,20 @@
 						<td></td>
 					</thead>
 					<tbody>
-						<td>Tabellenlink: <input type="text" name="tabellenlink_linkedtable" id="tabellenlink_linkedtable"></td>
-						<td>Spaltenanzeige: <input type="text" name="spaltenlink_linkedtable" id="spaltenlink_linkedtable"></td>
-						<td>Spaltenbreite: <input type="text" name="spaltenbreite_linkedtable" id="spaltenbreite_linkedtable"></td>
+						<td>Tabellenlink: <input type="text" name="tabellenlink_linkedtable"
+								id="tabellenlink_linkedtable"></td>
+						<td>Spaltenanzeige: <input type="text" name="spaltenlink_linkedtable"
+								id="spaltenlink_linkedtable"></td>
+						<td>Spaltenbreite: <input type="text" name="spaltenbreite_linkedtable"
+								id="spaltenbreite_linkedtable"></td>
 					</tbody>
 				</table>
-				
+
 			</div>
 
 			<div class="basicInfoForElement">
 				<p style="margin: 0px 0px 20px 0px;">Allgemeine Infos zum Element:</p>
-				<table style="width: 100%;" >
+				<table style="width: 100%;">
 					<thead>
 						<td style="width: 33.33%;"></td>
 						<td style="width: 33.33%;"></td>
@@ -325,41 +499,48 @@
 					<tbody>
 						<tr>
 							<td>Page:<input id="page" type="number"></td>
-							<td><div class="tooltip">
-								<span class="tooltiptext">An welcher Seite des eigentlichen Elements sollte der Name angezeigt werden</span>
-								Nameposition:</div><select name="nameposition" id="nameposition">
-								<option value="1">Oben</option>
-								<option value="2">Rechts</option>
-								<option value="3">Unten</option>
-								<option value="4">Links</option>
-							</select></td>
+							<td>
+								<div class="tooltip">
+									<span class="tooltiptext">An welcher Seite des eigentlichen Elements sollte der Name
+										angezeigt werden</span>
+									Nameposition:
+								</div><select name="nameposition" id="nameposition">
+									<option value="1">Oben</option>
+									<option value="2">Rechts</option>
+									<option value="3">Unten</option>
+									<option value="4">Links</option>
+								</select>
+							</td>
 							<td>Next Tab:<input id="nexttab" type="number"></td>
 						</tr>
 						<tr>
 							<td>Visible:<select name="visible" id="visible">
-								<option value="1">Ja</option>
-								<option value="0">Nein</option>
-							</select></td>
+									<option value="1">Ja</option>
+									<option value="0">Nein</option>
+								</select></td>
 							<td>Readonly:<select name="readonly" id="readonly">
-								<option value="1">Ja</option>
-								<option value="0">Nein</option>
-							</select></td>
+									<option value="1">Ja</option>
+									<option value="0">Nein</option>
+								</select></td>
 							<td>Breite:<input type="number" name="elementwidth" id="elementwidth"></td>
 						</tr>
 						<tr>
-							<td>Höhe:<input step="0.1" type="number" name="elementheight" id="elementheight"><button id="standardwidth" onclick="document.getElementById('elementheight').value='1.2'">Standard</button></td>
+							<td>Höhe:<input step="0.1" type="number" name="elementheight" id="elementheight"><button
+									id="standardwidth" class="OK-Button"
+									onclick="document.getElementById('elementheight').value='1.2'">Standard</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>
-				
-				
+
+
 				Name:<input id="name" type="text">
 				OnChange:<input id="onchange" type="text">
 				<input id="column" type="hidden">
 				<p id="column_info"></p>
 			</div>
-			<input type="button" value="Speichern" onclick="Postmessage(false)">
-			<input type="button" value="Abbrechen"
+			<input type="button" class="OK-Button" value="Speichern" onclick="Postmessage(false)">
+			<input type="button" class="Cancel-Button" value="Abbrechen"
 				onclick="document.getElementById('id01').style.display='none'; document.getElementById('linkedtable_info').style.display='none';">
 		</div>
 	</div>
@@ -373,16 +554,18 @@
 		DIALOG_HTML
 	</div>
 
-	<input type="button" id="saveAllButton" style="display: none;" class="saveAllButton" value="Alle Elemente speichern"
+	<input type="button" id="saveAllButton" style="display: none; position: absolute !important; top: 100% !important; left: 100%; transform: translate(-110%, -120%);" class="OK-Button" value="Alle Elemente speichern"
 		onclick="Postmessage(true)">
 
 	<script>
 		const xFactor = 5;
 		const yFactor = 40;
 		const heightFactor = 20;
-		
+
 		const vscode = acquireVsCodeApi();
 		let table = TABLE_NUMBER;
+
+
 
 		function showHelp() {
 			document.getElementById('helpDiv').style.display = 'block';
@@ -398,7 +581,7 @@
 			if (!saveAll) {
 				let element = document.getElementById("" + table + "-" + document.getElementById("column").value);
 				elements.push(element);
-				
+
 			} else {
 				elements = document.querySelectorAll(".notsaved");
 			}
@@ -454,10 +637,10 @@
 					element.setAttribute("data-width", elementwidth);
 					if (type != 15) {
 						element.children[0].innerHTML = name;
-						if(element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
+						if (element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
 
 
-							if(nameposition == 1) {
+							if (nameposition == 1) {
 								element.children[0].style.left = "0px";
 								element.children[0].style.position = "relative";
 								element.children[0].style.top = "-20px";
@@ -469,7 +652,7 @@
 
 						}
 
-						if(readonly == 0) {
+						if (readonly == 0) {
 							element.style.backgroundColor = "white";
 						} else {
 							element.style.backgroundColor = "black";
@@ -477,7 +660,7 @@
 
 					} else {
 						let style = `style="background-color: <BACKGROUNDCOLOR>;"`;
-						if(readonly == 0) {
+						if (readonly == 0) {
 							style.replace("<BACKGROUNDCOLOR>", "white");
 						} else {
 							style.replace("<BACKGROUNDCOLOR>", "black");
@@ -486,12 +669,12 @@
 						element.innerHTML = `<input ${style} type="checkbox">` + name;
 					}
 
-					if(visible == 0) {
+					if (visible == 0) {
 						element.style.display = "none";
 					} else {
 						element.style.opacity = "1";
 					}
-					
+
 					let width = "" + (parseFloat(elementwidth) * xFactor).toFixed(1) + "px";
 					element.style.width = width;
 					element.style.height = "" + (parseFloat(elementheight) * heightFactor).toFixed(1) + "px";
@@ -613,7 +796,7 @@
 
 			} else if (event.ctrlKey && event.altKey && event.shiftKey) {
 
-				if(document.getElementById('showWarningAgain').checked == false) {
+				if (document.getElementById('showWarningAgain').checked == false) {
 					document.getElementById('AusblendenWarnung').style.display = "block";
 				}
 
@@ -676,19 +859,19 @@
 		(function () {
 			let v = document.querySelectorAll(".Testungen");
 			v.forEach((value) => {
-				if(value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
-					if(value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
+				if (value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
+					if (value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
 						value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
 						value.children[0].style.position = "relative";
 					}
 				}
 
-				if(value.getAttribute("data-nameposition") == 1) {
+				if (value.getAttribute("data-nameposition") == 1) {
 					value.children[0].style.left = "0px";
 					value.children[0].style.position = "relative";
 					value.children[0].style.top = "-20px";
 				}
-				
+
 				dragmove(value, value, onStart, onEnd);
 			});
 
@@ -741,7 +924,11 @@
 						let element = document.getElementById("" + table + "-" + message.id);
 						element.setAttribute("data-column", "" + message.newid);
 						element.id = "" + table + "-" + message.newid;
-
+					case "showHelp": 
+						if(message.showHelp) {
+							document.getElementById("helpGreetings").style.display = "block";
+							showHelp();
+						}
 						break;
 				}
 			});

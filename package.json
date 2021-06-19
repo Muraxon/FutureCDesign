@@ -36,6 +36,11 @@
 				"FutureCDesign.Designzuordnung":{
 					"type":"object",
 					"description": "Zuordnung zu den Dateien"
+				},
+				"FutureCDesign.ShowHelpFirstTime": {
+					"type":"boolean",
+					"default": true,
+					"description": "Soll die Hilfe angezeigt werden sobald der Designer geöffnet wird"
 				}
 			}
 		},

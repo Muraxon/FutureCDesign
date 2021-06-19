@@ -13,8 +13,10 @@ class DlgElement {
 	m_NextTabPos :string;
 	m_Page :string;
 	m_NamePosition :string;
-	m_Height :string;
-	m_Width :string;
+	m_FutureHeight :string;
+	m_BrowserHeight :string;
+	m_FutureWidth :string;
+	m_BrowserWidth :string;
 	m_Column :string;
 	m_Table :string;
 	m_OnChange :string;
@@ -28,8 +30,10 @@ class DlgElement {
 				NextTabPos :string,
 				Page :string,
 				NamePosition :string,
-				Height :string,
-				Width :string,
+				FutureHeight :string,
+				BrowserHeight :string,
+				FutureWidth :string,
+				BrowserWidth :string,
 				Column :string,
 				Table :string,
 				OnChange :string) {
@@ -42,8 +46,10 @@ class DlgElement {
 		this.m_NextTabPos = NextTabPos;
 		this.m_Page = Page;
 		this.m_NamePosition = NamePosition;
-		this.m_Height = Height;
-		this.m_Width = Width;
+		this.m_FutureHeight = FutureHeight;
+		this.m_BrowserHeight = BrowserHeight;
+		this.m_FutureWidth = FutureWidth;
+		this.m_BrowserWidth = BrowserWidth;
 		this.m_Column = Column;
 		this.m_Table = Table;
 		this.m_OnChange = OnChange;
@@ -72,11 +78,17 @@ class DlgElement {
 			if(new_element.m_NextTabPos.length > 0) {
 				this.m_NextTabPos = new_element.m_NextTabPos;
 			}
-			if(new_element.m_Height.length > 0) {
-				this.m_Height = new_element.m_Height;
+			if(new_element.m_FutureHeight.length > 0) {
+				this.m_FutureHeight = new_element.m_FutureHeight;
 			}
-			if(new_element.m_Width.length > 0) {
-				this.m_Width = new_element.m_Width;
+			if(new_element.m_BrowserHeight.length > 0) {
+				this.m_BrowserHeight = new_element.m_BrowserHeight;
+			}
+			if(new_element.m_FutureWidth.length > 0) {
+				this.m_FutureWidth = new_element.m_FutureWidth;
+			}
+			if(new_element.m_BrowserWidth.length > 0) {
+				this.m_BrowserWidth = new_element.m_BrowserWidth;
 			}
 			if(new_element.m_Column.length > 0) {
 				this.m_Column = new_element.m_Column;
@@ -272,6 +284,9 @@ export class CDesign {
 						if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
 							let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
 							
+							let futureHeight = mHeight[1];
+							let futureWidth = mWidth[1];
+
 							let xpos :string|number = futuretobrowser(parseFloat(m[1]), CDesign.xfactor);
 		
 							let xposlabel :string|number = xpos;
@@ -341,7 +356,7 @@ export class CDesign {
 								${"x:" + xpos + " y:" + ypos}
 							*/
 			
-							let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, height, width, mColumn[1], tablenumber, onchangeText);
+							let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, futureHeight, height, futureWidth, width, mColumn[1], tablenumber, onchangeText);
 							let key = tablenumber+"-"+mColumn[1] + elementName;
 							if(dlgElementsMap.has(key)) {
 								dlgElementsMap.get(key).updateElement(newElement);
@@ -356,10 +371,10 @@ export class CDesign {
 		}
 
 		dlgElementsMap.forEach((element, key) => {	
-			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_Height}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_Width}; position: absolute; border: 1px solid #7a7a7a; opacity: <OPACITY>;"`;
+			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute; border: 1px solid #7a7a7a; opacity: <OPACITY>;"`;
 			let styleCheckboxDiv = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; position: absolute; opacity: <OPACITY>;"`;
 			let styleCheckbox = `style="cursor:pointer; background-color: <BACKGROUNDCOLOR>;"`;
-			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_Width}; height: 0px; position: absolute; border: 1px solid black; opacity: <OPACITY>;"`;
+			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; height: 0px; position: absolute; border: 1px solid black; opacity: <OPACITY>;"`;
 			
 			if(element.m_Visible == "0") {
 				styleTextField = styleTextField.replace("<OPACITY>", "0.0");
@@ -418,8 +433,8 @@ export class CDesign {
 				data-visible="${element.m_Visible}" 
 				data-readonly="${element.m_Readonly}" 
 				data-name="${element.m_Name}" 
-				data-height="${element.m_Height}" 
-				data-width="${element.m_Width}" 
+				data-height="${element.m_FutureHeight}" 
+				data-width="${element.m_FutureWidth}" 
 				class="Testungen" id="${tablenumber+"-"+element.m_Column}"
 			`);
 
