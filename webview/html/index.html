@@ -43,6 +43,15 @@
 			/* Could be more or less, depending on screen size */
 		}
 
+		/* Modal Content/Box */
+		.modal-content-100 {
+			padding: 60px;
+			background-color: #fefefe;
+			/* 5% from the top, 15% from the bottom and centered */
+			border: 1px solid #888;
+			/* Could be more or less, depending on screen size */
+		}
+
 
 		/* Add Zoom Animation */
 		.animate {
@@ -161,11 +170,39 @@
 		.text_of_element {
 			width: fit-content;
 		}
+
+		
+		.helpButton {
+			width: 30px;
+			position: fixed;
+			top: 10px;
+			left: 100%;
+			transform: translate(-140%, 20%);
+			cursor: pointer;
+			z-index: 10;
+		}
+
 	</style>
 </head>
 
 <body style="color: black; background-color: #bfdbff;">
 	<script src="JQUERY_PATH"></script>
+
+	<div class="helpButton" onclick="showHelp();"><img src="HELP_PNG_PATH" alt=""></div>
+	<div id="helpDiv" class="modal">
+		<div class="modal-content-100 animate">
+			<div class="basicInfoForElement">
+				<p>
+					TODO
+				</p>
+				<br>
+				<p>
+					TODO
+				</p>
+				<button onclick="document.getElementById('helpDiv').style.display = 'none';">OK</button>
+			</div>
+		</div>
+	</div>
 
 	<div id="AusblendenWarnung" class="modal">
 		<div class="modal-content animate">
@@ -346,6 +383,10 @@
 		
 		const vscode = acquireVsCodeApi();
 		let table = TABLE_NUMBER;
+
+		function showHelp() {
+			document.getElementById('helpDiv').style.display = 'block';
+		}
 
 		function Postmessage(saveAll) {
 			document.getElementById('id01').style.display = 'none';

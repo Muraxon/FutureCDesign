@@ -492,7 +492,6 @@ export class CDesign {
 		  });
 		}
 		openCity(activeIndex);
-		openCity(activeIndex);
 		</script>
 		`;
 		return {

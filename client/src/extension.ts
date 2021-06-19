@@ -112,9 +112,14 @@ export function activate(context: ExtensionContext) {
 				const jquery_path_temp = Uri.file(
 					path.join(context.extensionPath, 'webview', 'js', 'jquery.js')
 				);
+
+				const help_pic_temp = Uri.file(
+					path.join(context.extensionPath, "webview", "html", "help.png")
+				)
 	
 				const onDiskPath = panel.webview.asWebviewUri(onDiskPathtemp);
 				const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
+				const help_pic = panel.webview.asWebviewUri(help_pic_temp);
 	
 				let docs = [];
 				for(let x = 0; x < designzuordnung[filename].length; x++) {
@@ -132,6 +137,7 @@ export function activate(context: ExtensionContext) {
 				html_text = html_text.replace("ONDISKPATH", onDiskPath.toString());
 				html_text = html_text.replace("TABLE_NUMBER", tablenumer);
 				html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
+				html_text = html_text.replace("HELP_PNG_PATH", help_pic.toString());
 				
 				panel.webview.html = html_text;
 	
@@ -296,6 +302,7 @@ export function activate(context: ExtensionContext) {
 					context.subscriptions
 				);
 			} else {
+				
 				window.showErrorMessage(
 				`ACHTUNG!!!
 				Für die Datei ${editor.document.fileName} wurde keine Designzuordnung gefunden. Bitte gehen Sie in die Einstellung und hinterlegen sie eine passende Zuordnung.
@@ -306,7 +313,11 @@ export function activate(context: ExtensionContext) {
 				Diese Einstellung bedeutet: Für die Datei "auftrag - design.txt" wird die Datei "Testdesign.txt" vorher durchsucht und dann erst die Datei "auftrag - design.txt"
 				`, {
 					modal: true
-				});
+				}, "Einstellung öffnen").then((value) => {
+					if(value == "Einstellung öffnen") {
+						commands.executeCommand("workbench.action.openWorkspaceSettings");
+					}
+				})
 			}
 		})
 	);
