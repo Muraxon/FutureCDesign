@@ -181,7 +181,7 @@ export function activate(context: ExtensionContext) {
 									if(index >= 0) {
 										let endofLine = text.indexOf("\n", index + 1);
 										let endofLineTemp = text.indexOf("//", index + 1);
-										if(endofLineTemp < endofLine) {
+										if(endofLineTemp >= 0 && endofLineTemp < endofLine) {
 											endofLine = endofLineTemp;
 										}
 	
@@ -263,10 +263,20 @@ export function activate(context: ExtensionContext) {
 										}
 									} else {
 										let searchColumn = parseInt(messages[y].column) - 1;
+										let tabletoSearch = parseInt(messages[y].table);
 										let index = -1;
-										while(index < 0) {
-											index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + searchColumn + ";");
+										while(index < 0 && searchColumn > 1 && tabletoSearch > 0) {
+											index = text.search("CHANGEDIALOGELEMENT:" + tabletoSearch + ";" + searchColumn + ";");
 											searchColumn--;
+
+											if(searchColumn <= 1) {
+												tabletoSearch--;
+												searchColumn = 1000;
+											}
+										}
+
+										if(index < 0) {
+											index = 0;
 										}
 	
 										messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);

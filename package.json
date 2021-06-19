@@ -19,6 +19,7 @@
 	"activationEvents": [
 		"onLanguage:futurecdesign"
 	],
+	"icon": "logo.png",
 	"main": "./client/out/extension",
 	"contributes": {
 		"languages": [
