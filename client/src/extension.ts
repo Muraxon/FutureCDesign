@@ -149,9 +149,9 @@ export function activate(context: ExtensionContext) {
 	
 							for(let x = 0; x < messages[y].values.length; x++) {
 								let text = new_editor.document.getText();
-								let index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
+								let index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
 								if(messages[y].type == 45) {
-									index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
+									index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
 								}
 
 								if(index >= 0) {
