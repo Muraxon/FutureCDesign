@@ -30,6 +30,15 @@
 				"configuration": "./language-configuration.json"
 			}
 		],
+		"configuration":{
+			"title": "FutureC Design",
+			"properties": {
+				"FutureCDesign.Designzuordnung":{
+					"type":"object",
+					"description": "Zuordnung zu den Dateien"
+				}
+			}
+		},
 		"grammars": [
 			{
 				"language": "futurecdesign",

@@ -63,218 +63,251 @@ export function activate(context: ExtensionContext) {
 
 	context.subscriptions.push(
 		commands.registerCommand("open.futurec.designer", async () => {
-
-			let tablenumer = await window.showInputBox({
-				prompt: "Welche Tabellennummer?",
-				ignoreFocusOut: true,
-				placeHolder: "e.g.: 200",
-				validateInput: (val) => {
-					if (!val.match(/[0-9]+/)) {
-						return "Wert muss [0-9]+ entsprechen!";
-					}
-					return null;
-				}
-			});
-
-			let page = "a";
-			if (tablenumer.length <= 0 || page.length <= 0) {
-				return;
-			}
-
-			const panel = window.createWebviewPanel(
-				'designWebview',
-				'Test',
-				ViewColumn.Beside,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-
-			// Get path to resource on disk
-			const onDiskPathtemp = Uri.file(
-				path.join(context.extensionPath, 'webview', 'js', 'dragmove.js')
-			);
-
-			const jquery_path_temp = Uri.file(
-				path.join(context.extensionPath, 'webview', 'js', 'jquery.js')
-			);
-
-			const onDiskPath = panel.webview.asWebviewUri(onDiskPathtemp);
-			const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
-
 			let editor = window.activeTextEditor;
-			let obj = CDesign.CreateElements(editor.document, tablenumer, page);
+
+			let filename = editor.document.fileName;
+			let backslash = filename.lastIndexOf("\\");
+
+			let config = workspace.getConfiguration();
+			let designzuordnung = config.get<Object>("FutureCDesign.Designzuordnung");
 			
-			let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "index.html")).toString("utf-8");
-			html_text = html_text.replace("DIALOG_HTML", obj.html);
-			html_text = html_text.replace("DIALOG_CSS", obj.css);
-			html_text = html_text.replace("ONDISKPATH", onDiskPath.toString());
-			html_text = html_text.replace("TABLE_NUMBER", tablenumer);
-			html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
-			
-			panel.webview.html = html_text;
+			filename = filename.replace(workspace.workspaceFolders[0].uri.fsPath + "\\", "");
+			console.log(filename);
+			console.log();
 
-			panel.webview.onDidReceiveMessage(async (messages) => {
+			if(designzuordnung[filename]) {
 
-				for(let y = 0; y < messages.length; y++) {
-					switch (messages[y].command) {
-						case "removeElement":
-							let new_editor_ = await window.showTextDocument(editor.document, ViewColumn.One);
-							let text = new_editor_.document.getText();
-
-							let indexFound = text.indexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
-							
-							if(indexFound >= 0) {
-								let endofLine = text.indexOf("\n", indexFound + 1);
-								new_editor_.edit((editBuilder) => {
-									let pos = new_editor_.document.positionAt(indexFound);
-									let pos_end = new_editor_.document.positionAt(endofLine);
-									let range = new Range(pos, pos_end);
-									editBuilder.delete(range);
-									new_editor_.revealRange(range, TextEditorRevealType.InCenter);
-								});
-							}
-							break;
-						case "askColumn":
-							let input = await window.showInputBox({
-								ignoreFocusOut: true,
-								prompt: "Bitt geben Sie die Spalte ein:"
-							});
-
-							panel.webview.postMessage({ command: 'setColumnOfNewElement', id: messages[y].id, newid: input });
-							break;
-						case "saveChanges":
-							let new_editor = await window.showTextDocument(editor.document, ViewColumn.One);
+				let tablenumer = await window.showInputBox({
+					prompt: "Welche Tabellennummer?",
+					ignoreFocusOut: true,
+					placeHolder: "e.g.: 200",
+					validateInput: (val) => {
+						if (!val.match(/[0-9]+/)) {
+							return "Wert muss [0-9]+ entsprechen!";
+						}
+						return null;
+					}
+				});
 	
-							for(let x = 0; x < messages[y].values.length; x++) {
-								let text = new_editor.document.getText();
-								let index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
-								if(messages[y].type == 45) {
-									index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
+				let page = "a";
+				if (tablenumer.length <= 0 || page.length <= 0) {
+					return;
+				}
+	
+				const panel = window.createWebviewPanel(
+					'designWebview',
+					'Test',
+					ViewColumn.Beside,
+					{
+						enableScripts: true,
+						retainContextWhenHidden: true
+					}
+				);
+	
+				// Get path to resource on disk
+				const onDiskPathtemp = Uri.file(
+					path.join(context.extensionPath, 'webview', 'js', 'dragmove.js')
+				);
+	
+				const jquery_path_temp = Uri.file(
+					path.join(context.extensionPath, 'webview', 'js', 'jquery.js')
+				);
+	
+				const onDiskPath = panel.webview.asWebviewUri(onDiskPathtemp);
+				const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
+	
+				let docs = [];
+				for(let x = 0; x < designzuordnung[filename].length; x++) {
+					let new_file = workspace.workspaceFolders[0].uri.fsPath + "\\" +  designzuordnung[filename][x];
+					let doc = await workspace.openTextDocument(new_file);
+					docs.push(doc);
+				}
+				docs.push(editor.document);
+
+				let obj = CDesign.CreateElements(docs, tablenumer, page);
+				
+				let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "index.html")).toString("utf-8");
+				html_text = html_text.replace("DIALOG_HTML", obj.html);
+				html_text = html_text.replace("DIALOG_CSS", obj.css);
+				html_text = html_text.replace("ONDISKPATH", onDiskPath.toString());
+				html_text = html_text.replace("TABLE_NUMBER", tablenumer);
+				html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
+				
+				panel.webview.html = html_text;
+	
+				panel.webview.onDidReceiveMessage(async (messages) => {
+	
+					for(let y = 0; y < messages.length; y++) {
+						switch (messages[y].command) {
+							case "removeElement":
+								let new_editor_ = await window.showTextDocument(editor.document, ViewColumn.One);
+								let text = new_editor_.document.getText();
+	
+								let indexFound = text.indexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
+								
+								if(indexFound >= 0) {
+									let endofLine = text.indexOf("\n", indexFound + 1);
+									new_editor_.edit((editBuilder) => {
+										let pos = new_editor_.document.positionAt(indexFound);
+										let pos_end = new_editor_.document.positionAt(endofLine);
+										let range = new Range(pos, pos_end);
+										editBuilder.delete(range);
+										new_editor_.revealRange(range, TextEditorRevealType.InCenter);
+									});
 								}
-
-								if(index >= 0) {
-									let endofLine = text.indexOf("\n", index + 1);
-									let endofLineTemp = text.indexOf("//", index + 1);
-									if(endofLineTemp < endofLine) {
-										endofLine = endofLineTemp;
+								break;
+							case "askColumn":
+								let input = await window.showInputBox({
+									ignoreFocusOut: true,
+									prompt: "Bitt geben Sie die Spalte ein:"
+								});
+	
+								panel.webview.postMessage({ command: 'setColumnOfNewElement', id: messages[y].id, newid: input });
+								break;
+							case "saveChanges":
+								let new_editor = await window.showTextDocument(editor.document, ViewColumn.One);
+		
+								for(let x = 0; x < messages[y].values.length; x++) {
+									let text = new_editor.document.getText();
+									let index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
+									if(messages[y].type == 45) {
+										index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
 									}
-
-									let indexStart = text.indexOf(messages[y].values[x].type, index + 1);
-									if(messages[y].values[x].text.length > 0) {
 	
-										if(indexStart >= 0 && indexStart < endofLine) {
-											indexStart += messages[y].values[x].type.length;
-											let indexEnd = text.indexOf(";", indexStart);
+									if(index >= 0) {
+										let endofLine = text.indexOf("\n", index + 1);
+										let endofLineTemp = text.indexOf("//", index + 1);
+										if(endofLineTemp < endofLine) {
+											endofLine = endofLineTemp;
+										}
 	
-											if(messages[y].values[x].type == "ONCHANGE=") {
-												let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, indexStart);
-												indexEnd = onchangeIndeces.end;
-											}
-	
-											if(indexEnd >= 0 && indexEnd < endofLine) {
+										let indexStart = text.indexOf(messages[y].values[x].type, index + 1);
+										if(messages[y].values[x].text.length > 0) {
+		
+											if(indexStart >= 0 && indexStart < endofLine) {
+												indexStart += messages[y].values[x].type.length;
+												let indexEnd = text.indexOf(";", indexStart);
+		
+												if(messages[y].values[x].type == "ONCHANGE=") {
+													let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, indexStart);
+													indexEnd = onchangeIndeces.end;
+												}
+		
+												if(indexEnd >= 0 && indexEnd < endofLine) {
+													await new_editor.edit((editBuilder) => {
+														let pos = new_editor.document.positionAt(indexStart);
+														let pos_end = new_editor.document.positionAt(indexEnd);
+				
+														let rangeStart = new Range(pos, pos_end);
+														rangeStart = editor.document.validateRange(rangeStart);
+														
+														try {
+													
+															messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
+															editBuilder.replace(rangeStart, messages[y].values[x].text);
+															new_editor.selection = new Selection(pos, pos);
+															new_editor.revealRange(rangeStart, TextEditorRevealType.InCenter);
+														} catch (error) {
+															console.log(error);
+														}
+														
+													}).then((fulfilled) => {
+														console.log(fulfilled);
+													}, (reason) => {
+														
+													})
+												}
+											} else {
 												await new_editor.edit((editBuilder) => {
-													let pos = new_editor.document.positionAt(indexStart);
-													let pos_end = new_editor.document.positionAt(indexEnd);
+													let pos = new_editor.document.positionAt(endofLine - 1);
 			
-													let rangeStart = new Range(pos, pos_end);
-													rangeStart = editor.document.validateRange(rangeStart);
 													
-													try {
-												
-														messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
-														editBuilder.replace(rangeStart, messages[y].values[x].text);
-														new_editor.selection = new Selection(pos, pos);
-														new_editor.revealRange(rangeStart, TextEditorRevealType.InCenter);
-													} catch (error) {
-														console.log(error);
-													}
+	
+													messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
 													
-												}).then((fulfilled) => {
-													console.log(fulfilled);
-												}, (reason) => {
-													
+			
+													let text =  messages[y].values[x].type + messages[y].values[x].text + ";";
+													editBuilder.insert(pos, text);
+													new_editor.selection = new Selection(pos, pos);
+													new_editor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
+												}).then((ful) => {
+													console.log(ful);
 												})
 											}
 										} else {
-											await new_editor.edit((editBuilder) => {
-												let pos = new_editor.document.positionAt(endofLine - 1);
+											if(indexStart >= 0 && indexStart < endofLine) {
+												let tempindexStart = indexStart + messages[y].values[x].type.length;
+												let indexEnd = text.indexOf(";", tempindexStart);
 		
-												
-
-												messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
-												
+												if(messages[y].values[x].type == "ONCHANGE=") {
+													let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, tempindexStart);
+													indexEnd = onchangeIndeces.end;
+												}
 		
-												let text =  messages[y].values[x].type + messages[y].values[x].text + ";";
-												editBuilder.insert(pos, text);
-												new_editor.selection = new Selection(pos, pos);
-												new_editor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
-											}).then((ful) => {
-												console.log(ful);
-											})
+												await new_editor.edit((editBuilder) => {
+													let pos = new_editor.document.positionAt(indexStart);
+													let pos_end = new_editor.document.positionAt(indexEnd + 1);
+													let range = new Range(pos, pos_end);
+		
+													editBuilder.delete(range);
+													new_editor.selection = new Selection(pos, pos);
+													new_editor.revealRange(range, TextEditorRevealType.InCenter);
+												}).then((ful) => {
+													console.log(ful);
+												})
+											}
 										}
 									} else {
-										if(indexStart >= 0 && indexStart < endofLine) {
-											let tempindexStart = indexStart + messages[y].values[x].type.length;
-											let indexEnd = text.indexOf(";", tempindexStart);
-	
-											if(messages[y].values[x].type == "ONCHANGE=") {
-												let onchangeIndeces = CDesign.GetOnChangeStartAndEnd(text, tempindexStart);
-												indexEnd = onchangeIndeces.end;
-											}
-	
-											await new_editor.edit((editBuilder) => {
-												let pos = new_editor.document.positionAt(indexStart);
-												let pos_end = new_editor.document.positionAt(indexEnd + 1);
-												let range = new Range(pos, pos_end);
-	
-												editBuilder.delete(range);
-												new_editor.selection = new Selection(pos, pos);
-												new_editor.revealRange(range, TextEditorRevealType.InCenter);
-											}).then((ful) => {
-												console.log(ful);
-											})
+										let searchColumn = parseInt(messages[y].column) - 1;
+										let index = -1;
+										while(index < 0) {
+											index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + searchColumn + ";");
+											searchColumn--;
 										}
+	
+										messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
+	
+										let endofLine = text.indexOf("\n", index + 4);
+										endofLine++;
+										await new_editor.edit((editBuilder) => {
+											let pos = new_editor.document.positionAt(endofLine);
+											let text = "CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";" + messages[y].values[x].type + messages[y].values[x].text + ";\n";
+											editBuilder.insert(pos, text);
+											new_editor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
+										});
 									}
-								} else {
-									let searchColumn = parseInt(messages[y].column) - 1;
-									let index = -1;
-									while(index < 0) {
-										index = text.search("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + searchColumn + ";");
-										searchColumn--;
-									}
-
-									messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
-
-									let endofLine = text.indexOf("\n", index + 4);
-									endofLine++;
-									await new_editor.edit((editBuilder) => {
-										let pos = new_editor.document.positionAt(endofLine);
-										let text = "CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";" + messages[y].values[x].type + messages[y].values[x].text + ";\n";
-										editBuilder.insert(pos, text);
-										new_editor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
-									});
 								}
-							}
-							
-							break;
-					
-						default:
-							break;
+								
+								break;
+						
+							default:
+								break;
+						}
 					}
-				}
-			})
-
-				
-			panel.onDidDispose(
-				() => {
-					// When the panel is closed, cancel any future updates to the webview content
-					window.showErrorMessage("disposed");
-				},
-				null,
-				context.subscriptions
-			);
+				})
+	
+					
+				panel.onDidDispose(
+					() => {
+						// When the panel is closed, cancel any future updates to the webview content
+						window.showErrorMessage("disposed");
+					},
+					null,
+					context.subscriptions
+				);
+			} else {
+				window.showErrorMessage(
+				`ACHTUNG!!!
+				Für die Datei ${editor.document.fileName} wurde keine Designzuordnung gefunden. Bitte gehen Sie in die Einstellung und hinterlegen sie eine passende Zuordnung.
+				Diese könnte wiefolgt aufgebaut sein:
+				"Standard\\auftrag - design.txt": [
+					"Tempordner\\Testdesign.txt"
+				]
+				Diese Einstellung bedeutet: Für die Datei "auftrag - design.txt" wird die Datei "Testdesign.txt" vorher durchsucht und dann erst die Datei "auftrag - design.txt"
+				`, {
+					modal: true
+				});
+			}
 		})
 	);
 

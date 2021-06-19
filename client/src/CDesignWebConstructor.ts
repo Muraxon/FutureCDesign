@@ -1,5 +1,6 @@
 import { isBuffer } from 'util';
-import { TextDocument } from 'vscode';
+import { TextDocument, window, workspace } from 'vscode';
+import { doc } from './test/helper';
 
 
 class DlgElement {
@@ -167,7 +168,7 @@ export class CDesign {
 		return value;
 	}
 
-	static CreateElements(text :TextDocument, tablenumber :string, page:string) {
+	static CreateElements(docs :TextDocument[], tablenumber :string, page:string) {
 		let i = 0;
 		let html_text = "";
 		let css_text = "";
@@ -176,178 +177,181 @@ export class CDesign {
 		let dlgElementsMap :Map<string, DlgElement> = new Map();
 
 		let search = ["ADDDIALOGELEMENT:", "CHANGEDIALOGELEMENT:"];
-		for(let index = 0; index < search.length; index++) {
-			i = 0;
-			while(i < text.lineCount) {
-				let linetext = text.lineAt(i);
 
-				if(linetext.text.search(search[index] + tablenumber) >= 0) {
-					let reg = /XPOS=([0-9.%B]+);/gm;
-					let m = reg.exec(linetext.text);
+		for(let doc_idx = 0; doc_idx < docs.length; doc_idx++) {
+			for(let index = 0; index < search.length; index++) {
+				i = 0;
+				while(i < docs[doc_idx].lineCount) {
+					let linetext = docs[doc_idx].lineAt(i);
 	
-					let regY = /YPOS=([0-9.%B]+);/gm;
-					let mY = regY.exec(linetext.text);
-	
-					let regPage = new RegExp("PAGE=([0-9]+)", "gm");
-					let mPage = regPage.exec(linetext.text);
-					
-					if(mPage) {
-						if(!pages_text.has(mPage[1])) {
-							pages_text.set(mPage[1], "");
-						}
-					}
-	
-					let regHidden = /VISIBLE=(1|0)/gm;
-					let mHidden = regHidden.exec(linetext.text);
-					
-					let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
-					let mName = regName.exec(linetext.text);
-					
-					let regWidth = /WIDTH=([0-9.%B]+);/gm;
-					let mWidth = regWidth.exec(linetext.text);
-	
-					let regType = /TYPE=([0-9]+);/gm;
-					let mType = regType.exec(linetext.text);
-					
-					let regHeight = /HEIGHT=([0-9.%B]+);/gm;
-					let mHeight = regHeight.exec(linetext.text);
-					
-					let regOnchangeCompleteScript = /ONCHANGECOMPLETESCRIPT=([0-9]+);/gm;
-					let mOnchangeCompleteScript = regOnchangeCompleteScript.exec(linetext.text);
-					
-					let regNameposition = /NAMEPOSITION=([0-9]+);?/gm;
-					let mNameposition : RegExpExecArray|string = regNameposition.exec(linetext.text);
-					if(mNameposition) {
-						mNameposition = mNameposition[1];
-					} else {
-						mNameposition = "";
-					}
-					
-					let regNEXTTABPOS = /NEXTTABPOS=([0-9]+);?/gm;
-					let mNEXTTABPOS : RegExpExecArray|string = regNEXTTABPOS.exec(linetext.text);
-					if(mNEXTTABPOS) {
-						mNEXTTABPOS = mNEXTTABPOS[1];
-					} else {
-						mNEXTTABPOS = "";
-					}
-					
-					let regREADONLY = /READONLY=([0-9]+);?/gm;
-					let mREADONLY : RegExpExecArray|string = regREADONLY.exec(linetext.text);
-					if(mREADONLY) {
-						mREADONLY = mREADONLY[1];
-					} else {
-						mREADONLY = "";
-					}
-					
-					let regColumn = new RegExp(":" + tablenumber + ";([0-9]+);", "gm");
-					let mColumn = regColumn.exec(linetext.text);
-	
-					let onchangeOffset = linetext.text.indexOf("ONCHANGE=");
-					let onchangeText = "";
-					if(onchangeOffset >= 0) {
-						onchangeOffset += 9;
-						let startOnChange = onchangeOffset;
-						let isInString = false;
-						while(onchangeOffset < linetext.text.length) {
-							let char = linetext.text.charAt(onchangeOffset);
-							if(char == "\"") {
-								isInString = !isInString;
-							}
-							if(isInString) {
-								onchangeOffset++;
-								continue;
-							}
-							if(char == ";") {
-								break;
-							}
-							onchangeOffset++;
-						}
-	
-						onchangeText = linetext.text.substring(startOnChange, onchangeOffset);
-					}
-	
-					if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
-						let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
-						
-						let xpos :string|number = futuretobrowser(parseFloat(m[1]), CDesign.xfactor);
-	
-						let xposlabel :string|number = xpos;
-						let xposTextlabel :string|number = xpos;
-	
-						let name = "";
-						let elementName = "";
-						if(mName && mName[1]) {
-							name = "" + mName[1] + mColumn[1];
-							elementName = mName[1];
-						}
-	
-						if(m[1].search("%") >= 0) {
-							xpos = m[1]; 
-							xposlabel = m[1]; 
-							xposTextlabel = m[1];
-						} else {
-							if(parseInt(mType[1]) == 15) {
-								xposlabel = parseFloat(xposlabel) + 20;
-								xposlabel = "" + xposlabel + "px";
-							}
-							xposTextlabel = parseFloat(xposTextlabel) - (9 + (7 * name.length));
-							xposTextlabel = xposTextlabel + "px";
-							xpos = "" + xpos + "px";
-						}
-						let ypos :string|number = futuretobrowser(parseFloat(mY[1]), CDesign.yfactor);
-						if(mY[1].search("%") >= 0) {
-							ypos = mY[1]; 
-						} else {
-							ypos = "" + ypos + "px";
-						}
-						if(mY[1].charAt(mY[1].length - 1) == "B") {
-							ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "vw";
-						}
-						
-						let width :string|number = futuretobrowser(parseFloat(mWidth[1]), CDesign.xfactor);
-						if(mWidth[1].search("%") >= 0) {
-							width = mWidth[1];
-						} else {
-							width = "" + width + "px";
-						}
-	
-						if(mWidth[1].charAt(mWidth[1].length - 1) == "B") {
-							if(mWidth[1].substring(0, mWidth[1].length - 1) != "0") {
-								width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "vw";
-							} else {
-								width = "100vw";
-							}
-						}
-						
-						let height :string|number = futuretobrowser(parseFloat(mHeight[1]), CDesign.heightfactor);
-						//height--;
-						if(mHeight[1].search("%") >= 0) {
-							height = mHeight[1];
-						} else {
-							height = "" + height + "px";
-						}
-						if(mHeight[1].charAt(mHeight[1].length - 1) == "B") {
-							height = (parseFloat(mHeight[1].substring(0, mHeight[1].length - 1)) * 100)  + "vw";
-						}
-						/*
-							x:0 - y:0 -> x:0 - y:0
-							x:307 - y:21.5 -> x:1920 - y:1080
-							y:1 == 50,23
-							x:1 == 6,25
-	
-							${"x:" + xpos + " y:" + ypos}
-						*/
+					if(linetext.text.search(search[index] + tablenumber) >= 0) {
+						let reg = /XPOS=([0-9.%B]+);/gm;
+						let m = reg.exec(linetext.text);
 		
-						let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, height, width, mColumn[1], tablenumber, onchangeText);
-						let key = tablenumber+"-"+mColumn[1] + elementName;
-						if(dlgElementsMap.has(key)) {
-							dlgElementsMap.get(key).updateElement(newElement);
+						let regY = /YPOS=([0-9.%B]+);/gm;
+						let mY = regY.exec(linetext.text);
+		
+						let regPage = new RegExp("PAGE=([0-9]+)", "gm");
+						let mPage = regPage.exec(linetext.text);
+						
+						if(mPage) {
+							if(!pages_text.has(mPage[1])) {
+								pages_text.set(mPage[1], "");
+							}
+						}
+		
+						let regHidden = /VISIBLE=(1)/gm;
+						let mHidden = regHidden.exec(linetext.text);
+						
+						let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
+						let mName = regName.exec(linetext.text);
+						
+						let regWidth = /WIDTH=([0-9.%B]+);/gm;
+						let mWidth = regWidth.exec(linetext.text);
+		
+						let regType = /TYPE=([0-9]+);/gm;
+						let mType = regType.exec(linetext.text);
+						
+						let regHeight = /HEIGHT=([0-9.%B]+);/gm;
+						let mHeight = regHeight.exec(linetext.text);
+						
+						let regOnchangeCompleteScript = /ONCHANGECOMPLETESCRIPT=([0-9]+);/gm;
+						let mOnchangeCompleteScript = regOnchangeCompleteScript.exec(linetext.text);
+						
+						let regNameposition = /NAMEPOSITION=([0-9]+);?/gm;
+						let mNameposition : RegExpExecArray|string = regNameposition.exec(linetext.text);
+						if(mNameposition) {
+							mNameposition = mNameposition[1];
 						} else {
-							dlgElementsMap.set(key, newElement);
+							mNameposition = "";
+						}
+						
+						let regNEXTTABPOS = /NEXTTABPOS=([0-9]+);?/gm;
+						let mNEXTTABPOS : RegExpExecArray|string = regNEXTTABPOS.exec(linetext.text);
+						if(mNEXTTABPOS) {
+							mNEXTTABPOS = mNEXTTABPOS[1];
+						} else {
+							mNEXTTABPOS = "";
+						}
+						
+						let regREADONLY = /READONLY=([0-9]+);?/gm;
+						let mREADONLY : RegExpExecArray|string = regREADONLY.exec(linetext.text);
+						if(mREADONLY) {
+							mREADONLY = mREADONLY[1];
+						} else {
+							mREADONLY = "";
+						}
+						
+						let regColumn = new RegExp(":" + tablenumber + ";([0-9]+);", "gm");
+						let mColumn = regColumn.exec(linetext.text);
+		
+						let onchangeOffset = linetext.text.indexOf("ONCHANGE=");
+						let onchangeText = "";
+						if(onchangeOffset >= 0) {
+							onchangeOffset += 9;
+							let startOnChange = onchangeOffset;
+							let isInString = false;
+							while(onchangeOffset < linetext.text.length) {
+								let char = linetext.text.charAt(onchangeOffset);
+								if(char == "\"") {
+									isInString = !isInString;
+								}
+								if(isInString) {
+									onchangeOffset++;
+									continue;
+								}
+								if(char == ";") {
+									break;
+								}
+								onchangeOffset++;
+							}
+		
+							onchangeText = linetext.text.substring(startOnChange, onchangeOffset);
+						}
+		
+						if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
+							let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
+							
+							let xpos :string|number = futuretobrowser(parseFloat(m[1]), CDesign.xfactor);
+		
+							let xposlabel :string|number = xpos;
+							let xposTextlabel :string|number = xpos;
+		
+							let name = "";
+							let elementName = "";
+							if(mName && mName[1]) {
+								name = "" + mName[1] + mColumn[1];
+								elementName = mName[1];
+							}
+		
+							if(m[1].search("%") >= 0) {
+								xpos = m[1]; 
+								xposlabel = m[1]; 
+								xposTextlabel = m[1];
+							} else {
+								if(parseInt(mType[1]) == 15) {
+									xposlabel = parseFloat(xposlabel) + 20;
+									xposlabel = "" + xposlabel + "px";
+								}
+								xposTextlabel = parseFloat(xposTextlabel) - (9 + (7 * name.length));
+								xposTextlabel = xposTextlabel + "px";
+								xpos = "" + xpos + "px";
+							}
+							let ypos :string|number = futuretobrowser(parseFloat(mY[1]), CDesign.yfactor);
+							if(mY[1].search("%") >= 0) {
+								ypos = mY[1]; 
+							} else {
+								ypos = "" + ypos + "px";
+							}
+							if(mY[1].charAt(mY[1].length - 1) == "B") {
+								ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "vw";
+							}
+							
+							let width :string|number = futuretobrowser(parseFloat(mWidth[1]), CDesign.xfactor);
+							if(mWidth[1].search("%") >= 0) {
+								width = mWidth[1];
+							} else {
+								width = "" + width + "px";
+							}
+		
+							if(mWidth[1].charAt(mWidth[1].length - 1) == "B") {
+								if(mWidth[1].substring(0, mWidth[1].length - 1) != "0") {
+									width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "vw";
+								} else {
+									width = "100vw";
+								}
+							}
+							
+							let height :string|number = futuretobrowser(parseFloat(mHeight[1]), CDesign.heightfactor);
+							//height--;
+							if(mHeight[1].search("%") >= 0) {
+								height = mHeight[1];
+							} else {
+								height = "" + height + "px";
+							}
+							if(mHeight[1].charAt(mHeight[1].length - 1) == "B") {
+								height = (parseFloat(mHeight[1].substring(0, mHeight[1].length - 1)) * 100)  + "vw";
+							}
+							/*
+								x:0 - y:0 -> x:0 - y:0
+								x:307 - y:21.5 -> x:1920 - y:1080
+								y:1 == 50,23
+								x:1 == 6,25
+		
+								${"x:" + xpos + " y:" + ypos}
+							*/
+			
+							let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, height, width, mColumn[1], tablenumber, onchangeText);
+							let key = tablenumber+"-"+mColumn[1] + elementName;
+							if(dlgElementsMap.has(key)) {
+								dlgElementsMap.get(key).updateElement(newElement);
+							} else {
+								dlgElementsMap.set(key, newElement);
+							}
 						}
 					}
+					i++;
 				}
-				i++;
 			}
 		}
 
@@ -358,10 +362,10 @@ export class CDesign {
 			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_Width}; height: 0px; position: absolute; border: 1px solid black; opacity: <OPACITY>;"`;
 			
 			if(element.m_Visible == "0") {
-				styleTextField = styleTextField.replace("<OPACITY>", "0.5");
-				styleCheckbox = styleCheckbox.replace("<OPACITY>", "0.5");
-				styleCheckboxDiv = styleCheckboxDiv.replace("<OPACITY>", "0.5");
-				styleSeperator = styleSeperator.replace("<OPACITY>", "0.5");
+				styleTextField = styleTextField.replace("<OPACITY>", "0.0");
+				styleCheckbox = styleCheckbox.replace("<OPACITY>", "0.0");
+				styleCheckboxDiv = styleCheckboxDiv.replace("<OPACITY>", "0.0");
+				styleSeperator = styleSeperator.replace("<OPACITY>", "0.0");
 			}
 			if(element.m_Readonly == "1") {
 				styleTextField = styleTextField.replace("<BACKGROUNDCOLOR>", "black");
