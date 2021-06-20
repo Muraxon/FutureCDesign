@@ -5,7 +5,7 @@
 
 import { readFileSync } from 'fs';
 import * as path from 'path';
-import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection } from 'vscode';
+import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview } from 'vscode';
 
 import {
 	LanguageClient,
@@ -16,13 +16,19 @@ import {
 import { CDesign } from './CDesignWebConstructor';
 
 let client: LanguageClient;
+let extension_path :string;
+function createWebViewLink(panel :WebviewPanel, ...paths :string[]) {
+	// Get path to resource on disk
+	const onDiskPathtemp = Uri.file(
+		path.join(extension_path, ...paths)
+	);
 
-const cats = {
-	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif'
-};
+	return panel.webview.asWebviewUri(onDiskPathtemp);
+}
 
 export function activate(context: ExtensionContext) {
+	extension_path = context.extensionPath;
+
 	// The server is implemented in node
 	let serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')
@@ -103,23 +109,21 @@ export function activate(context: ExtensionContext) {
 					}
 				);
 	
-				// Get path to resource on disk
-				const onDiskPathtemp = Uri.file(
-					path.join(context.extensionPath, 'webview', 'js', 'dragmove.js')
-				);
+			
+				createWebViewLink(panel, 'webview', 'js', 'dragmove.js');
+				createWebViewLink(panel, "webview", "js", "jquery.js");
+				createWebViewLink(panel, "webview", "html", "help.png");
+				createWebViewLink(panel, "webview", "js", "custom.js");
+				createWebViewLink(panel, "webview", "css", "main.css");
 	
-				const jquery_path_temp = Uri.file(
-					path.join(context.extensionPath, 'webview', 'js', 'jquery.js')
-				);
+			
+				const onDiskPath = createWebViewLink(panel, 'webview', 'js', 'dragmove.js');
+				const jquery_path = createWebViewLink(panel, "webview", "js", "jquery.js");
+				const help_pic = createWebViewLink(panel, "webview", "html", "help.png");
+				const custom_js_path = createWebViewLink(panel, "webview", "js", "custom.js");
+				const custom_css_path = createWebViewLink(panel, "webview", "css", "main.css");
+	
 
-				const help_pic_temp = Uri.file(
-					path.join(context.extensionPath, "webview", "html", "help.png")
-				)
-	
-				const onDiskPath = panel.webview.asWebviewUri(onDiskPathtemp);
-				const jquery_path = panel.webview.asWebviewUri(jquery_path_temp);
-				const help_pic = panel.webview.asWebviewUri(help_pic_temp);
-	
 				let docs = [];
 				for(let x = 0; x < designzuordnung[filename].length; x++) {
 					let new_file = workspace.workspaceFolders[0].uri.fsPath + "\\" +  designzuordnung[filename][x];
@@ -137,6 +141,8 @@ export function activate(context: ExtensionContext) {
 				html_text = html_text.replace("TABLE_NUMBER", tablenumer);
 				html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
 				html_text = html_text.replace("HELP_PNG_PATH", help_pic.toString());
+				html_text = html_text.replace("CUSTOM_JS_PATH", custom_js_path.toString());
+				html_text = html_text.replace("MAIN_STYLES_PATH", custom_css_path.toString());
 				
 				panel.webview.html = html_text;
 				panel.webview.onDidReceiveMessage(async (messages) => {
