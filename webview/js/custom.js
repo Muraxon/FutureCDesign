@@ -262,10 +262,6 @@ export function OnChangeSelectType(event) {
 }
 
 
-
-
-// Use the start/end events to simulate "snap to edge" behaviour.
-const snapThreshold = 50;
 export function onStart(el, x, y) {
 	// On drag start, remove the fixed bottom style to prevent the bottom
 	// from sticking on the screen.
@@ -314,6 +310,121 @@ v.forEach((value) => {
 
 	dragmove(value, value, onStart, onEnd);
 });
+
+let x_pos_start = undefined;
+let y_pos_start = undefined;
+
+let x_pos_offset = undefined;
+let y_pos_offset = undefined;
+
+let is_dragging_area = undefined;
+window.addEventListener("mousedown", (event) => {
+	let el = document.createElement("div");
+	el.id = "DRAG_AREA";
+	el.style.background = "green";
+	el.style.position = "absolute";
+	el.style.top = "" + event.offsetY + "px";
+	el.style.left = "" + event.offsetX + "px";
+	document.getElementById(activeIndex).appendChild(el);
+
+	
+	let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+	elements.forEach((el) => {
+		while(el.className.indexOf(" marked_for_group_drag") >= 0) {
+			el.className = el.className.replace(" marked_for_group_drag", "");
+		}
+	});
+
+	x_pos_start = event.clientX;
+	y_pos_start = event.clientY;
+	x_pos_offset = event.offsetX;
+	y_pos_offset = event.offsetY;
+	is_dragging_area = true;
+});
+
+window.addEventListener("mousemove", (event)=> {
+	console.log("mousemove");
+	let el = document.getElementById("DRAG_AREA");
+	if(el && is_dragging_area && x_pos_start && y_pos_start) {
+		let width = (event.clientX - x_pos_start);
+
+		let y_real_offset = y_pos_offset;
+		let x_real_offset = x_pos_offset;
+
+		if(width < 0) {
+			width = width * -1;
+			x_real_offset -= width;
+		}
+		let height = (event.clientY - y_pos_start);
+		if(height < 0) {
+			height = height * -1;
+			y_real_offset -= height;
+		}
+
+		el.style.width = "" + width + "px";
+		el.style.height = "" + height + "px";
+
+		el.style.top = "" + y_real_offset + "px";
+		el.style.left = "" + x_real_offset + "px";
+	}
+
+});
+
+window.addEventListener("mouseup", (event) => {
+	x_pos_start = undefined;
+	y_pos_start = undefined;
+	is_dragging_area = undefined;
+	while(document.getElementById("DRAG_AREA")) {
+		let dragArea = document.getElementById("DRAG_AREA");
+
+		let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+		elements.forEach((el) => {
+			//if(el.style.width
+			//el.style.height
+			let x_pos_top_left_element = parseFloat(el.style.left);
+			let y_pos_top_left_element = parseFloat(el.style.top);
+
+			let x_pos_bottom_right_element = x_pos_top_left_element + parseFloat(el.style.width);
+			let y_pos_bottom_right_element = y_pos_top_left_element + parseFloat(el.style.height);
+			
+			
+			let x_pos_top_left_dragArea = parseFloat(dragArea.style.left);
+			let y_pos_top_left_dragArea = parseFloat(dragArea.style.top);
+			
+			let x_pos_bottom_right_dragArea = x_pos_top_left_dragArea + parseFloat(dragArea.style.width);
+			let y_pos_bottom_right_dragArea = y_pos_top_left_dragArea + parseFloat(dragArea.style.height);
+
+
+			if(((x_pos_top_left_element > x_pos_top_left_dragArea &&
+				x_pos_top_left_element < x_pos_bottom_right_dragArea)
+				||
+				(x_pos_bottom_right_element > x_pos_top_left_dragArea &&
+				x_pos_bottom_right_element < x_pos_bottom_right_dragArea)
+				||
+				(x_pos_top_left_dragArea > x_pos_top_left_element && 
+				x_pos_top_left_dragArea < x_pos_bottom_right_element))
+				&&
+				((y_pos_top_left_element > y_pos_top_left_dragArea &&
+				y_pos_top_left_element < y_pos_bottom_right_dragArea)
+				||
+				(y_pos_bottom_right_element > y_pos_top_left_dragArea &&
+				y_pos_bottom_right_element < y_pos_bottom_right_dragArea)
+				||
+				(y_pos_top_left_dragArea > y_pos_top_left_element && 
+				y_pos_top_left_dragArea < y_pos_bottom_right_element))
+				) {
+
+				if(el.className.indexOf("marked_for_group_drag") < 0) {
+					el.className += " marked_for_group_drag";
+				}
+			}
+			
+		})
+
+		document.getElementById(activeIndex).removeChild(document.getElementById("DRAG_AREA"));
+	}
+});
+
 
 let newelementsID = 100000;
 window.addEventListener("click", (event) => {

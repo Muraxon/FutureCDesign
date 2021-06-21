@@ -357,7 +357,10 @@ export class CDesign {
 							*/
 			
 							let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, futureHeight, height, futureWidth, width, mColumn[1], tablenumber, onchangeText);
-							let key = tablenumber+"-"+mColumn[1] + elementName;
+							let key = tablenumber+"-"+mColumn[1];
+							if(mColumn[1] == "0") {
+								key += elementName;
+							}
 							if(dlgElementsMap.has(key)) {
 								dlgElementsMap.get(key).updateElement(newElement);
 							} else {

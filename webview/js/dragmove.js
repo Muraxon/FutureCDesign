@@ -42,8 +42,7 @@ export const dragmove = function(target, handler, onStart, onEnd) {
     if (e.touches) {
       c = e.touches[0];
     }
-    
-    
+
     isMoving = true;
     startX = target.offsetLeft - c.clientX - (c.clientX % 5);
     startY = target.offsetTop - c.clientY - (c.clientY % 4);
@@ -87,6 +86,13 @@ export const dragmove = function(target, handler, onStart, onEnd) {
         return;
       }
     }
+
+    document.querySelectorAll(".marked_for_group_drag").forEach((el) => {
+      if(el != target) {
+       
+       }
+    });
+
 
     target.style.left = lastX + "px";
     target.style.top = lastY + "px";

@@ -306,3 +306,7 @@
 		font-family: inherit;
 		font-size: 0.85em;
 	}
+
+	.marked_for_group_drag {
+		background-color: #d73a49 !important;
+	}
