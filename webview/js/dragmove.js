@@ -1,6 +1,7 @@
 // https://github.com/knadh/dragmove.js
 // Kailash Nadh (c) 2020.
 // MIT License.
+//@ts-nocheck
 
 let _loaded = false;
 let _callbacks = [];
@@ -79,16 +80,16 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 	lastX = x + startX;
 	lastY = y + startY;
 	
-	// lastX -= (lastX % 5);
-	// lastY -= (lastY % 4);
+	lastX -= (lastX % 5);
+	lastY -= (lastY % 4);
 
 	// If boundary checking is on, don't let the element cross the viewport.
 	if (target.dataset.dragBoundary === "true") {
 	  if (lastX < 1 || lastX >= window.innerWidth - target.offsetWidth) {
-		return;
+		//return;
 	  }
 	  if (lastY < 1 || lastY >= window.innerHeight - target.offsetHeight) {
-		return;
+		//return;
 	  }
 	}
 
@@ -103,20 +104,11 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 			let real_start_y_temp = yClient - real_start_y;
 			
 			real_start_x_temp = (parseInt(elements[x].style.left) + real_start_x_temp);
-			// if(real_start_x_temp % 5 < 3) {
-			// 	real_start_x_temp = real_start_x_temp - (real_start_x_temp % 5);
-			// } else {
-			// 	real_start_x_temp = real_start_x_temp + (5 - (real_start_x_temp % 5));
-			// }
-
 			real_start_y_temp = (parseInt(elements[x].style.top) + real_start_y_temp);
-			// if(real_start_y_temp % 4 < 2) {
-			// 	real_start_y_temp = real_start_y_temp - (real_start_y_temp % 4);
-			// } else {
-			// 	real_start_y_temp = real_start_y_temp + (4 - (real_start_y_temp % 4));
-			// }
 
-			console.log(real_start_y_temp, real_start_x_temp);
+			real_start_x_temp = real_start_x_temp - (real_start_x_temp % 5);
+			real_start_y_temp = real_start_y_temp - (real_start_y_temp % 4);
+
 			elements[x].style.left = "" + real_start_x_temp + "px";
 			elements[x].style.top = "" + real_start_y_temp + "px";
 

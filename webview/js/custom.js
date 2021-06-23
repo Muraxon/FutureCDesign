@@ -124,18 +124,14 @@ export function Postmessage(saveAll) {
 		element.className = element.className.replace(" notsaved", "");
 
 		arr = [];
-		if (!saveAll) {
-
-			arr.push({
-				type: "TYPE=",
-				text: type
-			});
-			arr.push({
-				type: "PAGE=",
-				text: page
-			});
-		}
-
+		arr.push({
+			type: "TYPE=",
+			text: type
+		});
+		arr.push({
+			type: "PAGE=",
+			text: page
+		});
 		arr.push({
 			type: "XPOS=",
 			text: element.style.left
@@ -162,10 +158,14 @@ export function Postmessage(saveAll) {
 				type: "NAMEPOSITION=",
 				text: nameposition
 			});
+		}
+
 			arr.push({
 				type: "VISIBLE=",
 				text: visible
 			});
+
+		if(!saveAll) {
 			arr.push({
 				type: "READONLY=",
 				text: readonly
@@ -321,7 +321,7 @@ let is_dragging_area = undefined;
 window.addEventListener("mousedown", (event) => {
 	let el = document.createElement("div");
 	el.id = "DRAG_AREA";
-	el.style.background = "green";
+	el.className += " DRAG_AREA";
 	el.style.position = "absolute";
 	el.style.top = "" + event.offsetY + "px";
 	el.style.left = "" + event.offsetX + "px";

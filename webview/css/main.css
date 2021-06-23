@@ -310,3 +310,7 @@
 	.marked_for_group_drag {
 		background-color: #d73a49 !important;
 	}
+
+	.DRAG_AREA {
+		border: 1px dotted red;
+	}
