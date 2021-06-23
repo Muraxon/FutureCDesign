@@ -122,7 +122,7 @@ export function activate(context: ExtensionContext) {
 				const help_pic = createWebViewLink(panel, "webview", "html", "help.png");
 				const custom_js_path = createWebViewLink(panel, "webview", "js", "custom.js");
 				const custom_css_path = createWebViewLink(panel, "webview", "css", "main.css");
-	
+				const drag_drop_video = createWebViewLink(panel, "webview", "media", "Drag_Drop_Multiple_elements.gif");
 
 				let docs = [];
 				for(let x = 0; x < designzuordnung[filename].length; x++) {
@@ -131,7 +131,7 @@ export function activate(context: ExtensionContext) {
 					docs.push(doc);
 				}
 				docs.push(editor.document);
-
+				
 				let obj = CDesign.CreateElements(docs, tablenumer, page);
 				
 				let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "index.html")).toString("utf-8");
@@ -143,7 +143,9 @@ export function activate(context: ExtensionContext) {
 				html_text = html_text.replace("HELP_PNG_PATH", help_pic.toString());
 				html_text = html_text.replace("CUSTOM_JS_PATH", custom_js_path.toString());
 				html_text = html_text.replace("MAIN_STYLES_PATH", custom_css_path.toString());
-				
+				html_text = html_text.replace("DRAG_DROP_VIDEO", drag_drop_video.toString());
+				html_text = html_text.replace("VERSION_NUMBER", context.extension.packageJSON.version);
+			
 				panel.webview.html = html_text;
 				panel.webview.onDidReceiveMessage(async (messages) => {
 	
