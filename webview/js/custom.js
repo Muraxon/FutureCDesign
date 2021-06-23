@@ -292,195 +292,196 @@ export function onEnd(el, x, y) {
 	// }
 }
 
+$(document).ready(() => {
 
-let v = document.querySelectorAll(".Testungen");
-v.forEach((value) => {
-	if (value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
-		if (value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
-			value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
-			value.children[0].style.position = "relative";
+	let v = document.querySelectorAll(".Testungen");
+	v.forEach((value) => {
+		if (value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
+			if (value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
+				value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
+				value.children[0].style.position = "relative";
+			}
 		}
-	}
-
-	if (value.getAttribute("data-nameposition") == 1) {
-		value.children[0].style.left = "0px";
-		value.children[0].style.position = "relative";
-		value.children[0].style.top = "-20px";
-	}
-
-	dragmove(value, value, onStart, onEnd);
-});
-
-let x_pos_start = undefined;
-let y_pos_start = undefined;
-
-let x_pos_offset = undefined;
-let y_pos_offset = undefined;
-
-let is_dragging_area = undefined;
-window.addEventListener("mousedown", (event) => {
-	let el = document.createElement("div");
-	el.id = "DRAG_AREA";
-	el.className += " DRAG_AREA";
-	el.style.position = "absolute";
-	el.style.top = "" + event.offsetY + "px";
-	el.style.left = "" + event.offsetX + "px";
-	document.getElementById(activeIndex).appendChild(el);
-
 	
-	let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
-	elements.forEach((el) => {
-		while(el.className.indexOf(" marked_for_group_drag") >= 0) {
-			el.className = el.className.replace(" marked_for_group_drag", "");
+		if (value.getAttribute("data-nameposition") == 1) {
+			value.children[0].style.left = "0px";
+			value.children[0].style.position = "relative";
+			value.children[0].style.top = "-20px";
+		}
+	
+		dragmove(value, value, onStart, onEnd);
+	});
+	
+	let x_pos_start = undefined;
+	let y_pos_start = undefined;
+	
+	let x_pos_offset = undefined;
+	let y_pos_offset = undefined;
+	
+	let is_dragging_area = undefined;
+	window.addEventListener("mousedown", (event) => {
+		let el = document.createElement("div");
+		el.id = "DRAG_AREA";
+		el.className += " DRAG_AREA";
+		el.style.position = "absolute";
+		el.style.top = "" + event.offsetY + "px";
+		el.style.left = "" + event.offsetX + "px";
+		document.getElementById(activeIndex).appendChild(el);
+	
+		
+		let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+		elements.forEach((el) => {
+			while(el.className.indexOf(" marked_for_group_drag") >= 0) {
+				el.className = el.className.replace(" marked_for_group_drag", "");
+			}
+		});
+	
+		x_pos_start = event.clientX;
+		y_pos_start = event.clientY;
+		x_pos_offset = event.offsetX;
+		y_pos_offset = event.offsetY;
+		is_dragging_area = true;
+	});
+	
+	window.addEventListener("mousemove", (event)=> {
+		let el = document.getElementById("DRAG_AREA");
+		if(el && is_dragging_area && x_pos_start && y_pos_start) {
+			let width = (event.clientX - x_pos_start);
+	
+			let y_real_offset = y_pos_offset;
+			let x_real_offset = x_pos_offset;
+	
+			if(width < 0) {
+				width = width * -1;
+				x_real_offset -= width;
+			}
+			let height = (event.clientY - y_pos_start);
+			if(height < 0) {
+				height = height * -1;
+				y_real_offset -= height;
+			}
+	
+			el.style.width = "" + width + "px";
+			el.style.height = "" + height + "px";
+	
+			el.style.top = "" + y_real_offset + "px";
+			el.style.left = "" + x_real_offset + "px";
+		}
+	
+	});
+		
+	
+	let newelementsID = 100000;
+
+	window.addEventListener("mouseup", (event) => {
+		x_pos_start = undefined;
+		y_pos_start = undefined;
+		is_dragging_area = undefined;
+		while(document.getElementById("DRAG_AREA")) {
+			let dragArea = document.getElementById("DRAG_AREA");
+	
+			let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+			elements.forEach((el) => {
+				//if(el.style.width
+				//el.style.height
+				let x_pos_top_left_element = parseFloat(el.style.left);
+				let y_pos_top_left_element = parseFloat(el.style.top);
+	
+				let x_pos_bottom_right_element = x_pos_top_left_element + parseFloat(el.style.width);
+				let y_pos_bottom_right_element = y_pos_top_left_element + parseFloat(el.style.height);
+				
+				
+				let x_pos_top_left_dragArea = parseFloat(dragArea.style.left);
+				let y_pos_top_left_dragArea = parseFloat(dragArea.style.top);
+				
+				let x_pos_bottom_right_dragArea = x_pos_top_left_dragArea + parseFloat(dragArea.style.width);
+				let y_pos_bottom_right_dragArea = y_pos_top_left_dragArea + parseFloat(dragArea.style.height);
+	
+	
+				if(((x_pos_top_left_element > x_pos_top_left_dragArea &&
+					x_pos_top_left_element < x_pos_bottom_right_dragArea)
+					||
+					(x_pos_bottom_right_element > x_pos_top_left_dragArea &&
+					x_pos_bottom_right_element < x_pos_bottom_right_dragArea)
+					||
+					(x_pos_top_left_dragArea > x_pos_top_left_element && 
+					x_pos_top_left_dragArea < x_pos_bottom_right_element))
+					&&
+					((y_pos_top_left_element > y_pos_top_left_dragArea &&
+					y_pos_top_left_element < y_pos_bottom_right_dragArea)
+					||
+					(y_pos_bottom_right_element > y_pos_top_left_dragArea &&
+					y_pos_bottom_right_element < y_pos_bottom_right_dragArea)
+					||
+					(y_pos_top_left_dragArea > y_pos_top_left_element && 
+					y_pos_top_left_dragArea < y_pos_bottom_right_element))
+					) {
+	
+					if(el.className.indexOf("marked_for_group_drag") < 0) {
+						el.className += " marked_for_group_drag";
+					}
+				}
+				
+			})
+	
+			document.getElementById(activeIndex).removeChild(document.getElementById("DRAG_AREA"));
+		}
+
+		if (event.ctrlKey && event.altKey && !event.shiftKey) {
+
+			let newElement = document.createElement("div");
+			newElement.style.backgroundColor = "white";
+			newElement.style.resize = "none";
+			newElement.style.height = "20px";
+			newElement.style.top = "" + event.offsetY + "px";
+			newElement.style.left = "" + event.offsetX + "px";
+			newElement.style.width = `${(35 * xFactor)}px`;
+			newElement.style.position = "absolute";
+			newElement.style.border = " 1px solid #7a7a7a";
+	
+			newElement.onclick = showElementDialog;
+			newElement.setAttribute("data-saved", "1");
+			newElement.setAttribute("data-column", "");
+			newElement.setAttribute("data-onchange", "");
+			newElement.setAttribute("data-nexttab", "0");
+			newElement.setAttribute("data-page", activeIndex);
+			newElement.setAttribute("data-type", "25");
+			newElement.setAttribute("data-nameposition", "4");
+			newElement.setAttribute("data-visible", "1");
+			newElement.setAttribute("data-readonly", "0");
+			newElement.setAttribute("data-name", "new_element");
+			newElement.className += " Testungen notsaved";
+			newElement.innerHTML = "<div class='text_of_element'>Neues Element</div>";
+			newElement.id = "" + table + "-" + newelementsID;
+	
+			document.getElementById(activeIndex).appendChild(newElement);
+			dragmove(newElement, newElement, onStart, onEnd);
+	
+			vscode.postMessage([{
+				command: "askColumn",
+				id: newelementsID
+			}]);
+			newelementsID++;
 		}
 	});
 
-	x_pos_start = event.clientX;
-	y_pos_start = event.clientY;
-	x_pos_offset = event.offsetX;
-	y_pos_offset = event.offsetY;
-	is_dragging_area = true;
-});
-
-window.addEventListener("mousemove", (event)=> {
-	console.log("mousemove");
-	let el = document.getElementById("DRAG_AREA");
-	if(el && is_dragging_area && x_pos_start && y_pos_start) {
-		let width = (event.clientX - x_pos_start);
-
-		let y_real_offset = y_pos_offset;
-		let x_real_offset = x_pos_offset;
-
-		if(width < 0) {
-			width = width * -1;
-			x_real_offset -= width;
-		}
-		let height = (event.clientY - y_pos_start);
-		if(height < 0) {
-			height = height * -1;
-			y_real_offset -= height;
-		}
-
-		el.style.width = "" + width + "px";
-		el.style.height = "" + height + "px";
-
-		el.style.top = "" + y_real_offset + "px";
-		el.style.left = "" + x_real_offset + "px";
-	}
-
-});
-
-window.addEventListener("mouseup", (event) => {
-	x_pos_start = undefined;
-	y_pos_start = undefined;
-	is_dragging_area = undefined;
-	while(document.getElementById("DRAG_AREA")) {
-		let dragArea = document.getElementById("DRAG_AREA");
-
-		let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
-		elements.forEach((el) => {
-			//if(el.style.width
-			//el.style.height
-			let x_pos_top_left_element = parseFloat(el.style.left);
-			let y_pos_top_left_element = parseFloat(el.style.top);
-
-			let x_pos_bottom_right_element = x_pos_top_left_element + parseFloat(el.style.width);
-			let y_pos_bottom_right_element = y_pos_top_left_element + parseFloat(el.style.height);
-			
-			
-			let x_pos_top_left_dragArea = parseFloat(dragArea.style.left);
-			let y_pos_top_left_dragArea = parseFloat(dragArea.style.top);
-			
-			let x_pos_bottom_right_dragArea = x_pos_top_left_dragArea + parseFloat(dragArea.style.width);
-			let y_pos_bottom_right_dragArea = y_pos_top_left_dragArea + parseFloat(dragArea.style.height);
-
-
-			if(((x_pos_top_left_element > x_pos_top_left_dragArea &&
-				x_pos_top_left_element < x_pos_bottom_right_dragArea)
-				||
-				(x_pos_bottom_right_element > x_pos_top_left_dragArea &&
-				x_pos_bottom_right_element < x_pos_bottom_right_dragArea)
-				||
-				(x_pos_top_left_dragArea > x_pos_top_left_element && 
-				x_pos_top_left_dragArea < x_pos_bottom_right_element))
-				&&
-				((y_pos_top_left_element > y_pos_top_left_dragArea &&
-				y_pos_top_left_element < y_pos_bottom_right_dragArea)
-				||
-				(y_pos_bottom_right_element > y_pos_top_left_dragArea &&
-				y_pos_bottom_right_element < y_pos_bottom_right_dragArea)
-				||
-				(y_pos_top_left_dragArea > y_pos_top_left_element && 
-				y_pos_top_left_dragArea < y_pos_bottom_right_element))
-				) {
-
-				if(el.className.indexOf("marked_for_group_drag") < 0) {
-					el.className += " marked_for_group_drag";
+	
+	// Handle the message inside the webview
+	window.addEventListener('message', event => {
+		const message = event.data; // The JSON data our extension sent
+		switch (message.command) {
+			case 'setColumnOfNewElement':
+				let element = document.getElementById("" + table + "-" + message.id);
+				element.setAttribute("data-column", "" + message.newid);
+				element.id = "" + table + "-" + message.newid;
+			case "showHelp":
+				if (message.showHelp) {
+					document.getElementById("helpGreetings").style.display = "block";
+					showHelp();
 				}
-			}
-			
-		})
+				break;
+		}
+	});
 
-		document.getElementById(activeIndex).removeChild(document.getElementById("DRAG_AREA"));
-	}
-});
-
-
-let newelementsID = 100000;
-window.addEventListener("click", (event) => {
-	if (event.ctrlKey && event.altKey && !event.shiftKey) {
-		event.stopPropagation();
-
-		let newElement = document.createElement("div");
-		newElement.style.backgroundColor = "white";
-		newElement.style.resize = "none";
-		newElement.style.height = "20px";
-		newElement.style.top = "" + event.offsetY + "px";
-		newElement.style.left = "" + event.offsetX + "px";
-		newElement.style.width = `${(35 * xFactor)}px`;
-		newElement.style.position = "absolute";
-		newElement.style.border = " 1px solid #7a7a7a";
-
-		newElement.onclick = showElementDialog;
-		newElement.setAttribute("data-saved", "1");
-		newElement.setAttribute("data-column", "");
-		newElement.setAttribute("data-onchange", "");
-		newElement.setAttribute("data-nexttab", "0");
-		newElement.setAttribute("data-page", activeIndex);
-		newElement.setAttribute("data-type", "25");
-		newElement.setAttribute("data-nameposition", "4");
-		newElement.setAttribute("data-visible", "1");
-		newElement.setAttribute("data-readonly", "0");
-		newElement.setAttribute("data-name", "new_element");
-		newElement.className += " Testungen notsaved";
-		newElement.innerHTML = "<div class='text_of_element'>Neues Element</div>";
-		newElement.id = "" + table + "-" + newelementsID;
-
-		document.getElementById(activeIndex).appendChild(newElement);
-		dragmove(newElement, newElement, onStart, onEnd);
-
-		vscode.postMessage([{
-			command: "askColumn",
-			id: newelementsID
-		}]);
-		newelementsID++;
-	}
-});
-
-// Handle the message inside the webview
-window.addEventListener('message', event => {
-	const message = event.data; // The JSON data our extension sent
-	switch (message.command) {
-		case 'setColumnOfNewElement':
-			let element = document.getElementById("" + table + "-" + message.id);
-			element.setAttribute("data-column", "" + message.newid);
-			element.id = "" + table + "-" + message.newid;
-		case "showHelp":
-			if (message.showHelp) {
-				document.getElementById("helpGreetings").style.display = "block";
-				showHelp();
-			}
-			break;
-	}
-});
+})	
 
