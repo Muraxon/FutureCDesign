@@ -174,7 +174,7 @@ export function activate(context: ExtensionContext) {
 									prompt: "Bitt geben Sie die Spalte ein:"
 								});
 	
-								panel.webview.postMessage({ command: 'setColumnOfNewElement', id: messages[y].id, newid: input });
+								panel.webview.postMessage({ command: 'createNewElement', new_id: input, offsetX: messages[y].offsetX, offsetY: messages[y].offsetY });
 								break;
 							case "saveChanges":
 								let new_editor = await window.showTextDocument(editor.document, ViewColumn.One);
@@ -309,7 +309,6 @@ export function activate(context: ExtensionContext) {
 				})
 	
 				setTimeout(() => {
-					workspace.getConfiguration().update("FutureCDesign.ShowHelpFirstTime", false);
 					panel.webview.postMessage({
 						command: "showHelp",
 						showHelp: showHelp
@@ -324,7 +323,6 @@ export function activate(context: ExtensionContext) {
 					context.subscriptions
 				);
 			} else {
-				
 				window.showErrorMessage(
 				`ACHTUNG!!!
 				Für die Datei ${editor.document.fileName} wurde keine Designzuordnung gefunden. Bitte gehen Sie in die Einstellung und hinterlegen sie eine passende Zuordnung.
@@ -337,7 +335,7 @@ export function activate(context: ExtensionContext) {
 					modal: true
 				}, "Einstellung öffnen").then((value) => {
 					if(value == "Einstellung öffnen") {
-						commands.executeCommand("workbench.action.openWorkspaceSettings");
+						commands.executeCommand("workbench.action.openWorkspaceSettings", {openToSide: false, query: "FutureCDesign.Designzuordnung"});
 					}
 				})
 			}

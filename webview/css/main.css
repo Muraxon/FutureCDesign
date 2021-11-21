@@ -344,3 +344,15 @@
 		padding-top: 20px;
 		position: relative;
 	}
+
+	.UI_VISIBLE {
+		display: block !important;
+	}
+
+	.UI_INVISIBLE {
+		display: none !important;
+	}
+
+	.ACTIVE_PAGE_BUTTON {
+		background-color: green !important;
+	}

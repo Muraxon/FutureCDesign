@@ -11,28 +11,30 @@
 </head>
 
 <body style="color: black; background-color: #bfdbff;">
+	
 	<script src="JQUERY_PATH">
-
+		
 
 	</script>
 	<script type="module" >
-		import { Postmessage, onEnd, onStart, showHelp, showElementDialog, OnChangeSelectType } from 'CUSTOM_JS_PATH';
+		import { Postmessage, onEnd, onStart, showHelp, showElementDialog, OnChangeSelectType, showHiddenElements } from 'CUSTOM_JS_PATH';
 		window.Postmessage = Postmessage;
 		window.onEnd = onEnd;
 		window.onStart = onStart;
 		window.showHelp = showHelp;
 		window.showElementDialog = showElementDialog;
 		window.OnChangeSelectType = OnChangeSelectType;
+		window.showHiddenElements = showHiddenElements;
 	</script>
 
 	<div class="helpButton" onclick="showHelp();"><img src="HELP_PNG_PATH" alt=""></div>
 	<div id="helpDiv" class="modal">
 		<div class="modal-content animate">
 			<div class="basicInfoForElement">
+				<p>
+					Herzlich Willkommen zum FutureC Designer! (Erstentwurf)
+				</p>
 				<div id="helpGreetings" style="display: none;">
-					<p>
-						Herzlich Willkommen zum FutureC Designer! (Erstentwurf)
-					</p>
 					<p>
 						Dies ist die Hilfe, die das erste mal geöffnet wird, sobald man den Designer öffnet. Später kann man diesen Dialog über das Fragezeichen oben rechts öffnen. Um sich die verfügbaren Keybindings erneut anzuschauen.
 					</p>

@@ -212,7 +212,7 @@ export class CDesign {
 							}
 						}
 		
-						let regHidden = /VISIBLE=(1)/gm;
+						let regHidden = /VISIBLE=(1|0)/gm;
 						let mHidden = regHidden.exec(linetext.text);
 						
 						let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
@@ -374,17 +374,11 @@ export class CDesign {
 		}
 
 		dlgElementsMap.forEach((element, key) => {	
-			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute; border: 1px solid #7a7a7a; opacity: <OPACITY>;"`;
-			let styleCheckboxDiv = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; position: absolute; opacity: <OPACITY>;"`;
+			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute; border: 1px solid #7a7a7a;"`;
+			let styleCheckboxDiv = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; position: absolute;"`;
 			let styleCheckbox = `style="cursor:pointer; background-color: <BACKGROUNDCOLOR>;"`;
-			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; height: 0px; position: absolute; border: 1px solid black; opacity: <OPACITY>;"`;
+			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; height: 0px; position: absolute; border: 1px solid black;"`;
 			
-			if(element.m_Visible == "0") {
-				styleTextField = styleTextField.replace("<OPACITY>", "0.0");
-				styleCheckbox = styleCheckbox.replace("<OPACITY>", "0.0");
-				styleCheckboxDiv = styleCheckboxDiv.replace("<OPACITY>", "0.0");
-				styleSeperator = styleSeperator.replace("<OPACITY>", "0.0");
-			}
 			if(element.m_Readonly == "1") {
 				styleTextField = styleTextField.replace("<BACKGROUNDCOLOR>", "black");
 				styleCheckbox = styleCheckbox.replace("<BACKGROUNDCOLOR>", "black");
@@ -397,25 +391,33 @@ export class CDesign {
 				styleSeperator = styleSeperator.replace("<BACKGROUNDCOLOR>", "white");
 			}
 
+			let visible_class = `class="UI_VISIBLE Draggable"`;
+			if(element.m_Visible == "0") {
+				visible_class = `class="UI_INVISIBLE Draggable"`;
+			}
+
 
 			let html_text = "";
 			if(parseInt(element.m_Type) == 15) {
 				html_text = `<div 
 					${styleCheckboxDiv}
+					${visible_class}
 					DATA_TO_SET_IN_ELEMENT
 					>
-					<input class="text_of_element" type="checkbox">${element.m_Name}
+					<input class=" text_of_element" type="checkbox">${element.m_Name}
 				</div>`;
 				
 			} else if(parseInt(element.m_Type) == 4) {
 				html_text = `<div ${styleSeperator}
+					 ${visible_class}
 					DATA_TO_SET_IN_ELEMENT>
-					<div class="text_of_element">${element.m_Name}</div>
+					<div class=" text_of_element">${element.m_Name}</div>
 				</div>`;
 
 
 			} else {
 				html_text = `<div ${styleTextField} 
+					${visible_class}
 					DATA_TO_SET_IN_ELEMENT>
 					<div class="text_of_element">${element.m_Name}</div>
 				</div>
@@ -438,7 +440,7 @@ export class CDesign {
 				data-name="${element.m_Name}" 
 				data-height="${element.m_FutureHeight}" 
 				data-width="${element.m_FutureWidth}" 
-				class="Testungen" id="${tablenumber+"-"+element.m_Column}"
+				id="${tablenumber+"-"+element.m_Column}"
 			`);
 
 			let newHtml = pages_text.get(element.m_Page) + html_text;
@@ -466,6 +468,7 @@ export class CDesign {
 			i++;
 		});
 
+		button_html += `<div style="top: -22px; position: absolute; left: ${((i + 5) * 25)}px"><input type="checkbox" id="showHiddenElementsCheckbox"  class="w3-bar-item w3-button" onclick="showHiddenElements(this);">Versteckte Elemente anzeigen</div>`;
 		button_html = `<div class="w3-bar w3-black">` + button_html + `</div>`;
 		
 		
@@ -489,7 +492,7 @@ export class CDesign {
 		  activeIndex = cityName;
 		  document.getElementById(cityName).style.display = "block";
 
-		  let v = document.querySelectorAll(".Testungen");
+		  let v = document.querySelectorAll(".Draggable");
 		  v.forEach(value => {
 			let temp = value.style.width;
 			value.style.width = "10000px";

@@ -65,6 +65,8 @@ export function Postmessage(saveAll) {
 			elementheight = document.getElementById("elementheight").value;
 			elementwidth = document.getElementById("elementwidth").value;
 
+			let old_visible = element.getAttribute("data-visible");
+
 			element.setAttribute("data-column", column);
 			element.setAttribute("data-onchange", onchange);
 			element.setAttribute("data-nexttab", nexttab);
@@ -110,10 +112,17 @@ export function Postmessage(saveAll) {
 				element.innerHTML = `<input ${style} type="checkbox">` + name;
 			}
 
-			if (visible == 0) {
-				element.style.display = "none";
-			} else {
-				element.style.opacity = "1";
+			let showHidden = document.getElementById("showHiddenElementsCheckbox");
+			if (visible == 0 && old_visible == 1) {
+				while(element.className.indexOf("UI_VISIBLE") >= 0) {
+					element.className = element.className.replace("UI_VISIBLE", "");
+				} 
+				element.className += " UI_INVISIBLE";
+			} else if(visible == 1 && old_visible == 0){
+				while(element.className.indexOf("UI_INVISIBLE") >= 0) {
+					element.className = element.className.replace("UI_INVISIBLE", "");
+				} 
+				element.className += " UI_VISIBLE";
 			}
 
 			let width = "" + (parseFloat(elementwidth) * xFactor).toFixed(1) + "px";
@@ -149,36 +158,32 @@ export function Postmessage(saveAll) {
 			text: element.style.height
 		});
 
-		if (!saveAll) {
-			arr.push({
-				type: "NEXTTABPOS=",
-				text: nexttab
-			});
-			arr.push({
-				type: "NAMEPOSITION=",
-				text: nameposition
-			});
-		}
+		arr.push({
+			type: "NEXTTABPOS=",
+			text: nexttab
+		});
+		arr.push({
+			type: "NAMEPOSITION=",
+			text: nameposition
+		});
 
-			arr.push({
-				type: "VISIBLE=",
-				text: visible
-			});
+		arr.push({
+			type: "VISIBLE=",
+			text: visible
+		});
 
-		if(!saveAll) {
-			arr.push({
-				type: "READONLY=",
-				text: readonly
-			});
-			arr.push({
-				type: "NAME=",
-				text: name
-			});
-			arr.push({
-				type: "ONCHANGE=",
-				text: onchange
-			});
-		}
+		arr.push({
+			type: "READONLY=",
+			text: readonly
+		});
+		arr.push({
+			type: "NAME=",
+			text: name
+		});
+		arr.push({
+			type: "ONCHANGE=",
+			text: onchange
+		});
 
 		allElementsChange.push({
 			column: column,
@@ -292,16 +297,39 @@ export function onEnd(el, x, y) {
 	// }
 }
 
+export function showHiddenElements(event) {
+
+	// versteckte element anzeigen und visible elemente ausblenden
+	let v = document.querySelectorAll(".UI_VISIBLE");
+	let v_invisible = document.querySelectorAll(".UI_INVISIBLE");
+	v.forEach((element) => {
+		while(element.className.indexOf("UI_VISIBLE") >= 0) {
+			element.className = element.className.replace("UI_VISIBLE", "");
+		}
+		element.className += " UI_INVISIBLE";
+	});
+	
+	v_invisible.forEach((element) => {
+		while(element.className.indexOf("UI_INVISIBLE") >= 0) {
+			element.className = element.className.replace("UI_INVISIBLE", "");
+			
+		}
+		element.className += " UI_VISIBLE";
+	});
+	openCity(activeIndex);
+
+}
+
 $(document).ready(() => {
 
-	let v = document.querySelectorAll(".Testungen");
+	let v = document.querySelectorAll(".Draggable");
 	v.forEach((value) => {
-		if (value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
-			if (value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
-				value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
-				value.children[0].style.position = "relative";
-			}
-		}
+		// if (value.getAttribute("data-type") != 4 && value.getAttribute("data-type") != 15) {
+		// 	if (value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
+		// 		value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
+		// 		value.children[0].style.position = "relative";
+		// 	}
+		// }
 	
 		if (value.getAttribute("data-nameposition") == 1) {
 			value.children[0].style.left = "0px";
@@ -329,7 +357,7 @@ $(document).ready(() => {
 		document.getElementById(activeIndex).appendChild(el);
 	
 		
-		let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+		let elements = document.getElementById(activeIndex).querySelectorAll(".Draggable");
 		elements.forEach((el) => {
 			while(el.className.indexOf(" marked_for_group_drag") >= 0) {
 				el.className = el.className.replace(" marked_for_group_drag", "");
@@ -371,8 +399,6 @@ $(document).ready(() => {
 	});
 		
 	
-	let newelementsID = 100000;
-
 	window.addEventListener("mouseup", (event) => {
 		x_pos_start = undefined;
 		y_pos_start = undefined;
@@ -380,7 +406,7 @@ $(document).ready(() => {
 		while(document.getElementById("DRAG_AREA")) {
 			let dragArea = document.getElementById("DRAG_AREA");
 	
-			let elements = document.getElementById(activeIndex).querySelectorAll(".Testungen");
+			let elements = document.getElementById(activeIndex).querySelectorAll(".Draggable");
 			elements.forEach((el) => {
 				//if(el.style.width
 				//el.style.height
@@ -428,40 +454,11 @@ $(document).ready(() => {
 		}
 
 		if (event.ctrlKey && event.altKey && !event.shiftKey) {
-
-			let newElement = document.createElement("div");
-			newElement.style.backgroundColor = "white";
-			newElement.style.resize = "none";
-			newElement.style.height = "20px";
-			newElement.style.top = "" + event.offsetY + "px";
-			newElement.style.left = "" + event.offsetX + "px";
-			newElement.style.width = `${(35 * xFactor)}px`;
-			newElement.style.position = "absolute";
-			newElement.style.border = " 1px solid #7a7a7a";
-	
-			newElement.onclick = showElementDialog;
-			newElement.setAttribute("data-saved", "1");
-			newElement.setAttribute("data-column", "");
-			newElement.setAttribute("data-onchange", "");
-			newElement.setAttribute("data-nexttab", "0");
-			newElement.setAttribute("data-page", activeIndex);
-			newElement.setAttribute("data-type", "25");
-			newElement.setAttribute("data-nameposition", "4");
-			newElement.setAttribute("data-visible", "1");
-			newElement.setAttribute("data-readonly", "0");
-			newElement.setAttribute("data-name", "new_element");
-			newElement.className += " Testungen notsaved";
-			newElement.innerHTML = "<div class='text_of_element'>Neues Element</div>";
-			newElement.id = "" + table + "-" + newelementsID;
-	
-			document.getElementById(activeIndex).appendChild(newElement);
-			dragmove(newElement, newElement, onStart, onEnd);
-	
 			vscode.postMessage([{
 				command: "askColumn",
-				id: newelementsID
+				offsetY: event.offsetY,
+				offsetX: event.offsetX
 			}]);
-			newelementsID++;
 		}
 	});
 
@@ -470,10 +467,40 @@ $(document).ready(() => {
 	window.addEventListener('message', event => {
 		const message = event.data; // The JSON data our extension sent
 		switch (message.command) {
-			case 'setColumnOfNewElement':
-				let element = document.getElementById("" + table + "-" + message.id);
-				element.setAttribute("data-column", "" + message.newid);
-				element.id = "" + table + "-" + message.newid;
+			case 'createNewElement':
+
+				let newElement = document.createElement("div");
+				newElement.style.backgroundColor = "white";
+				newElement.style.resize = "none";
+				newElement.style.height = `${1.2 * heightFactor}px`;
+				newElement.style.top = "" + message.offsetY + "px";
+				newElement.style.left = "" + message.offsetX + "px";
+				newElement.style.width = `${(25 * xFactor)}px`;
+				newElement.style.position = "absolute";
+				newElement.style.border = " 1px solid #7a7a7a";
+		
+				newElement.onclick = showElementDialog;
+				newElement.setAttribute("data-column", "" + message.new_id);
+				newElement.setAttribute("data-onchange", "");
+				newElement.setAttribute("data-nexttab", "0");
+				newElement.setAttribute("data-page", activeIndex);
+				newElement.setAttribute("data-type", "25");
+				newElement.setAttribute("data-nameposition", "4");
+				newElement.setAttribute("data-visible", "1");
+				newElement.setAttribute("data-readonly", "0");
+				newElement.setAttribute("data-name", "Neues Element");
+				newElement.setAttribute("data-saved", "1");
+				newElement.setAttribute("data-height", "1.2");
+				newElement.setAttribute("data-width", "25");
+				newElement.className += " Draggable notsaved";
+				newElement.innerHTML = "<div class='text_of_element'>Neues Element</div>";
+				newElement.id = "" + table + "-" + message.new_id;
+		
+				document.getElementById(activeIndex).appendChild(newElement);
+				dragmove(newElement, newElement, onStart, onEnd);
+
+				openCity(activeIndex);
+				break;
 			case "showHelp":
 				if (message.showHelp) {
 					document.getElementById("helpGreetings").style.display = "block";
