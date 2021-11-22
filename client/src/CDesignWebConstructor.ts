@@ -500,13 +500,15 @@ export class CDesign {
 			if(value.getAttribute("data-nameposition") == 1) {
 				value.children[0].style.left = "0px";
 				value.children[0].style.position = "relative";
-				value.children[0].style.top = "-20px";
+				value.children[0].style.top = "-15px";
 			} else {
 				if(value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
 					value.children[0].style.width = "fit-content";
-					value.children[0].style.left = "-" + (value.children[0].offsetWidth + 5) + "px";
+					value.children[0].style.left = "-" + (value.children[0].offsetWidth + 6) + "px";
 					value.children[0].style.width = "" + (value.children[0].offsetWidth + 5) + "px";
 					value.children[0].style.position = "relative";
+					value.children[0].style.top = "50%";
+					value.children[0].style.transform = "translateY(-50%)";
 				}
 			}
 			value.style.width = temp;

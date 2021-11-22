@@ -86,11 +86,13 @@ export function Postmessage(saveAll) {
 					if (nameposition == 1) {
 						element.children[0].style.left = "0px";
 						element.children[0].style.position = "relative";
-						element.children[0].style.top = "-20px";
+						element.children[0].style.top = "-15px";
 					} else {
 						element.children[0].style.top = "0px";
-						element.children[0].style.left = "-" + (element.children[0].width + 5) + "px";
+						element.children[0].style.left = "-" + (element.children[0].width + 6) + "px";
 						element.children[0].style.position = "relative";
+						element.children[0].style.top = "50%";
+						element.children[0].style.transform = "translateY(-50%)";
 					}
 
 				}
@@ -334,7 +336,7 @@ $(document).ready(() => {
 		if (value.getAttribute("data-nameposition") == 1) {
 			value.children[0].style.left = "0px";
 			value.children[0].style.position = "relative";
-			value.children[0].style.top = "-20px";
+			value.children[0].style.top = "-15px";
 		}
 	
 		dragmove(value, value, onStart, onEnd);

@@ -102,7 +102,7 @@ export function activate(context: ExtensionContext) {
 				const panel = window.createWebviewPanel(
 					'designWebview',
 					'Test',
-					ViewColumn.Beside,
+					ViewColumn.Active,
 					{
 						enableScripts: true,
 						retainContextWhenHidden: true
@@ -152,7 +152,7 @@ export function activate(context: ExtensionContext) {
 					for(let y = 0; y < messages.length; y++) {
 						switch (messages[y].command) {
 							case "removeElement":
-								let new_editor_ = await window.showTextDocument(editor.document, ViewColumn.One);
+								let new_editor_ = await window.showTextDocument(editor.document, ViewColumn.Active);
 								let text = new_editor_.document.getText();
 	
 								let indexFound = text.indexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
@@ -177,7 +177,7 @@ export function activate(context: ExtensionContext) {
 								panel.webview.postMessage({ command: 'createNewElement', new_id: input, offsetX: messages[y].offsetX, offsetY: messages[y].offsetY });
 								break;
 							case "saveChanges":
-								let new_editor = await window.showTextDocument(editor.document, ViewColumn.One);
+								let new_editor = await window.showTextDocument(editor.document, ViewColumn.Active);
 		
 								for(let x = 0; x < messages[y].values.length; x++) {
 									let text = new_editor.document.getText();
