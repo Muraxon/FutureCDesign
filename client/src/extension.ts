@@ -139,9 +139,12 @@ export function activate(context: ExtensionContext) {
 				html_text = html_text.replace("DIALOG_CSS", obj.css);
 				html_text = html_text.replace("ONDISKPATH", onDiskPath.toString());
 				html_text = html_text.replace("TABLE_NUMBER", tablenumer);
+				html_text = html_text.replace("ACTIVE_INDEX", obj.activeindex.toString());
 				html_text = html_text.replace("JQUERY_PATH", jquery_path.toString());
 				html_text = html_text.replace("HELP_PNG_PATH", help_pic.toString());
+
 				html_text = html_text.replace("CUSTOM_JS_PATH", custom_js_path.toString());
+
 				html_text = html_text.replace("MAIN_STYLES_PATH", custom_css_path.toString());
 				html_text = html_text.replace("DRAG_DROP_VIDEO", drag_drop_video.toString());
 				html_text = html_text.replace("VERSION_NUMBER", context.extension.packageJSON.version);

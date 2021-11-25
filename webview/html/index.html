@@ -8,16 +8,15 @@
 	<title>Test</title>
 	<link rel="stylesheet" href="MAIN_STYLES_PATH">
 	<meta id="tablenumber" content="TABLE_NUMBER">
+	<meta id="activeindex" content="ACTIVE_INDEX">
 </head>
 
 <body style="color: black; background-color: #bfdbff;">
 	
 	<script src="JQUERY_PATH">
-		
-
 	</script>
 	<script type="module" >
-		import { Postmessage, onEnd, onStart, showHelp, showElementDialog, OnChangeSelectType, showHiddenElements } from 'CUSTOM_JS_PATH';
+		import { Postmessage, onEnd, onStart, showHelp, showElementDialog, OnChangeSelectType, showHiddenElements, openOtherTab } from 'CUSTOM_JS_PATH';
 		window.Postmessage = Postmessage;
 		window.onEnd = onEnd;
 		window.onStart = onStart;
@@ -25,6 +24,7 @@
 		window.showElementDialog = showElementDialog;
 		window.OnChangeSelectType = OnChangeSelectType;
 		window.showHiddenElements = showHiddenElements;
+		window.openOtherTab = openOtherTab;
 	</script>
 
 	<div class="helpButton" onclick="showHelp();"><img src="HELP_PNG_PATH" alt=""></div>

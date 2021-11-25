@@ -7,6 +7,45 @@ const heightFactor = 20;
 
 const vscode = acquireVsCodeApi();
 let table = document.getElementById("tablenumber").content;
+let activeIndex = document.getElementById("activeindex").content;
+
+export function openOtherTab(newActiveIndex) {
+  let i = 0;
+  let x = document.getElementsByClassName("Tabs");
+  for (i = 0; i < x.length; i++) {
+	x[i].style.display = "none";  
+  }
+  activeIndex = newActiveIndex;
+  document.getElementById(newActiveIndex).style.display = "block";
+
+  let v = document.querySelectorAll(".Draggable");
+  v.forEach(value => {
+	let temp = value.style.width;
+	value.style.width = "10000px";
+
+	if(value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) {
+		value.children[0].style.left = "0px";
+		value.children[0].style.position = "relative";
+		value.children[0].style.top = "-15px";
+	} else {
+		if(value.children) {
+			let i = 0;
+			while(value.children[i] && value.children[i].innerHTML && value.children[i].innerHTML.length > 0) {
+				value.children[i].style.width = "fit-content";
+				value.children[i].style.left = "-" + (value.children[i].offsetWidth + 6) + "px";
+				value.children[i].style.width = "" + (value.children[i].offsetWidth + 5) + "px";
+				value.children[i].style.position = "relative";
+				value.children[i].style.top = "50%";
+				value.children[i].style.transform = "translateY(-50%)";
+				i++;
+			}
+		}
+	}
+	value.style.width = temp;
+  });
+}
+openOtherTab(activeIndex);
+
 
 export function showHelp() {
 	document.getElementById('helpDiv').style.display = 'block';
@@ -83,7 +122,7 @@ export function Postmessage(saveAll) {
 				if (element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
 
 
-					if (nameposition == 1) {
+					if (nameposition == 1 && type != 15) {
 						element.children[0].style.left = "0px";
 						element.children[0].style.position = "relative";
 						element.children[0].style.top = "-15px";
@@ -318,7 +357,7 @@ export function showHiddenElements(event) {
 		}
 		element.className += " UI_VISIBLE";
 	});
-	openCity(activeIndex);
+	openOtherTab(activeIndex);
 
 }
 
@@ -333,7 +372,7 @@ $(document).ready(() => {
 		// 	}
 		// }
 	
-		if (value.getAttribute("data-nameposition") == 1) {
+		if (value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) {
 			value.children[0].style.left = "0px";
 			value.children[0].style.position = "relative";
 			value.children[0].style.top = "-15px";
@@ -501,7 +540,7 @@ $(document).ready(() => {
 				document.getElementById(activeIndex).appendChild(newElement);
 				dragmove(newElement, newElement, onStart, onEnd);
 
-				openCity(activeIndex);
+				openOtherTab(activeIndex);
 				break;
 			case "showHelp":
 				if (message.showHelp) {

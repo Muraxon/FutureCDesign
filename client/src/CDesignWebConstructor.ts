@@ -212,7 +212,7 @@ export class CDesign {
 							}
 						}
 		
-						let regHidden = /VISIBLE=(1|0)/gm;
+						let regHidden = /VISIBLE=(1)/gm;
 						let mHidden = regHidden.exec(linetext.text);
 						
 						let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
@@ -404,7 +404,7 @@ export class CDesign {
 					${visible_class}
 					DATA_TO_SET_IN_ELEMENT
 					>
-					<input class=" text_of_element" type="checkbox">${element.m_Name}
+					<input class=" text_of_element" style="float: left !important;" type="checkbox">${element.m_Name}
 				</div>`;
 				
 			} else if(parseInt(element.m_Type) == 4) {
@@ -453,8 +453,8 @@ export class CDesign {
 
 		let aktiveKey = -1;
 		pages_text.forEach((val, key) => {
-			button_html += `<button style="top: -22px; position: absolute; left: ${((i + 1) * 25)}px" class="w3-bar-item w3-button" onclick="openCity('${key}')">${key}</button>`
-			html_text = html_text + `<div id="${key}" class="w3-container city"`
+			button_html += `<button style="top: -22px; position: absolute; left: ${((i + 1) * 25)}px" class="w3-bar-item w3-button" onclick="openOtherTab('${key}')">${key}</button>`
+			html_text = html_text + `<div id="${key}" class="w3-container Tabs"`
 			if((aktiveKey < 0) || (aktiveKey > 0 && aktiveKey > parseInt(key))) {
 				aktiveKey = parseInt(key);
 			}
@@ -474,50 +474,13 @@ export class CDesign {
 		
 		// 
 		// 
-		// <div id="Paris" class="w3-container city" style="display:none">
+		// <div id="Paris" class="w3-container Tabs" style="display:none">
 		// </div>
-		// <div id="Tokyo" class="w3-container city" style="display:none">
+		// <div id="Tokyo" class="w3-container Tabs" style="display:none">
 		// </div>
 		html_text += button_html;
-
-		html_text += `
-		<script>
-		var activeIndex = ${aktiveKey};
-		function openCity(cityName) {
-		  var i;
-		  var x = document.getElementsByClassName("city");
-		  for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";  
-		  }
-		  activeIndex = cityName;
-		  document.getElementById(cityName).style.display = "block";
-
-		  let v = document.querySelectorAll(".Draggable");
-		  v.forEach(value => {
-			let temp = value.style.width;
-			value.style.width = "10000px";
-
-			if(value.getAttribute("data-nameposition") == 1) {
-				value.children[0].style.left = "0px";
-				value.children[0].style.position = "relative";
-				value.children[0].style.top = "-15px";
-			} else {
-				if(value.children && value.children[0] && value.children[0].innerHTML && value.children[0].innerHTML.length > 0) {
-					value.children[0].style.width = "fit-content";
-					value.children[0].style.left = "-" + (value.children[0].offsetWidth + 6) + "px";
-					value.children[0].style.width = "" + (value.children[0].offsetWidth + 5) + "px";
-					value.children[0].style.position = "relative";
-					value.children[0].style.top = "50%";
-					value.children[0].style.transform = "translateY(-50%)";
-				}
-			}
-			value.style.width = temp;
-		  });
-		}
-		openCity(activeIndex);
-		</script>
-		`;
 		return {
+			activeindex: aktiveKey,
 			html: html_text,
 			css: css_text
 		};
