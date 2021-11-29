@@ -1,0 +1,102 @@
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	font-weight: 500;
+	font-size: 11px;
+	color: black;
+}
+
+.table_wrapper {
+	background: white;
+	width: 1455px;
+	position: absolute;
+	left: 237px;
+	top: 62px;
+	height: 904px;
+	overflow: scroll;
+}
+
+table {
+	border-collapse: collapse;
+	box-sizing: border-box;
+	font-size: 11px;
+	width: 1455px;
+}
+
+td,
+th {
+	text-align: left;
+	position: relative;
+	border-bottom: none;
+	border-right: 1px solid rgb(229, 229, 229);
+
+}
+
+th {
+	line-height: 22px;
+
+}
+
+thead {
+	position: sticky;
+	top: 0px;
+	z-index: 10;
+	background: white;
+}
+td {
+	border-right: 1px solid rgb(200, 200, 200) !important;
+}
+
+.table_row_gerade {
+	background: rgb(255, 255, 150);
+}
+
+.table_row_ungerade {
+	background: rgb(210, 210, 210);
+}
+
+table,
+th,
+td {
+	height: 12px;
+}
+
+tr {
+	line-height: 12px;
+}
+
+.resize_bar {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 5px;
+	cursor: col-resize;
+	background: red;
+	user-select: none;
+	z-index: 10;
+}
+
+#pic1 {
+	background-image: url("../media/background.png");
+	width: 224px;
+	height: 1047px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#pic2 {
+	background-image: url("../media/background_2.png");
+	height: 59px;
+	width: 1694px;
+	left: 224px;
+	top: 0px;
+	position: absolute;
+}
+
+.new_search_option, .search_option {
+	position: absolute;
+	width: fit-content;
+	height: fit-content;
+	right: 92px;
+	overflow: hidden;
+}

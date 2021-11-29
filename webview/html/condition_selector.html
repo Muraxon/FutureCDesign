@@ -1,0 +1,96 @@
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Condition-Selector</title>
+	<link rel="stylesheet" href="DIALOG_CSS_PATH">
+	<!-- <link rel="stylesheet" href="../css/condition_selector.css"> -->
+</head>
+
+<body style="overflow: hidden;">
+	<!-- <img src="../media/background.png" alt="" style="position: absolute; top: 0px; left: 0px;">
+	<img src="../media/background_2.png" alt="" style="position: absolute; left: 224px; top: 0px;"> -->
+	<!-- <div id="pic1"></div>
+	<div id="pic2"></div> -->
+	<div style="width: 1920px; height: 1080px; position: absolute; top: 0px; left: 0px; overflow: hidden;"><img src="BACKGROUND_IMAGE_PATH" alt="" ></div>
+	<!-- <div style="width: 1920px; height: 1080px; position: absolute; top: 0px; left: 0px; overflow: hidden;"><img src="../media/background_complete.png" alt="" ></div> -->
+	
+	<div class="table_wrapper">
+		<table id="table_">
+			<thead>
+				<tr>
+					<th>test 1</th>
+					<th>test 2</th>
+					<th>test 3</th>
+					<th>test 4</th>
+					<th>test 5</th>
+					<th>test 6</th>
+					<th>test 7</th>
+				</tr>
+			</thead>
+			<tbody id="table_body">
+				
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="new_search_option" style="top: 64px;"><img src="../media/date_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 87px;"><img src="../media/date_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 108px;"><img src="../media/textfield_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 131px;"><img src="../media/combo_search_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 153px;"><img src="../media/link_search_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 177px;"><img src="../media/dropdown_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 197px;"><img src="../media/dropdown_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 217px;"><img src="../media/dropdown_ctrl.png" alt=""></div>
+	<div class="new_search_option" style="top: 237px;"><img src="../media/dropdown_ctrl.png" alt=""></div>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', (e) => {
+			function test() {
+			let table_html = document.getElementById("table_");
+
+			for (let i = 0; i < table_html.rows[0].children.length; i++) {
+				let col = table_html.rows[0].children[i];
+
+				let scroll_bar = document.createElement("div");
+				scroll_bar.className += " resize_bar";
+				col.appendChild(scroll_bar);
+			}
+
+			let table_body = document.getElementById("table_body");
+			for(let i = 0; i < 10; i++) {
+				let tr = document.createElement("tr");
+				tr.innerHTML = `<td>daten 1</td>
+				<td>daten 2</td>
+				<td>daten 3</td>
+				<td>daten 4</td>
+				<td>daten 5</td>
+				<td>daten 6</td>
+				<td>daten 7</td>`
+				table_body.appendChild(tr);
+			}
+
+			let resize_bars = document.getElementsByClassName("resize_bar");
+			for (let i = 0; i < resize_bars.length; i++) {
+				resize_bars[i].style.height = table_html.offsetHeight + "px";
+			}
+
+			for (let i = 1; i < table_html.rows.length; i++) {
+				if (i % 2 == 1) {
+					table_html.rows[i].className += " table_row_gerade";
+				} else {
+					table_html.rows[i].className += " table_row_ungerade";
+				}
+			}
+
+		
+		}
+		test();
+		});
+	</script>
+</body>
+
+</html>

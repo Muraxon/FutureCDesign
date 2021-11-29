@@ -3,7 +3,7 @@
 	"description": "Ein Languageserver für designfiles",
 	"author": "Marcel Sotiropoulos <marcel.sotiropoulos@soti-it.at>",
 	"license": "MIT",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Muraxon/FutureCDesign"
@@ -57,6 +57,11 @@
 				"command": "open.futurec.designer",
 				"title": "Open Designer",
 				"category": "FutureC"
+			},
+			{
+				"command": "open.condition.selector",
+				"title": "Open Condition Selector",
+				"category": "FutureC"
 			}
 		],
 		"menus": {
@@ -64,6 +69,10 @@
 				{
 					"when": "editorFocus && editorLangId == futurecdesign",
 					"command": "open.futurec.designer",
+					"group": "navigation"
+				},{
+					"when": "editorFocus && editorLangId == futurecdesign",
+					"command": "open.condition.selector",
 					"group": "navigation"
 				}
 			],

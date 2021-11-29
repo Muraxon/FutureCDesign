@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { readFileSync } from 'fs';
+import { readFile, readFileSync } from 'fs';
 import * as path from 'path';
 import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview } from 'vscode';
 
@@ -310,7 +310,6 @@ export function activate(context: ExtensionContext) {
 						}
 					}
 				})
-	
 				setTimeout(() => {
 					panel.webview.postMessage({
 						command: "showHelp",
@@ -344,6 +343,31 @@ export function activate(context: ExtensionContext) {
 			}
 		})
 	);
+
+	context.subscriptions.push(commands.registerCommand("open.condition.selector", async () => {
+
+		let condition_panel = window.createWebviewPanel("Condition Selector", "Condition Selector", ViewColumn.Active, {
+			enableScripts: true
+		});
+
+		const custom_css_path = createWebViewLink(condition_panel, "webview", "css", "condition_selector.css");
+		const background_image = createWebViewLink(condition_panel, "webview", "media", "background_complete.png");
+
+		
+		let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "condition_selector.html"), "utf-8");
+		html_text = html_text.replace("DIALOG_CSS_PATH", custom_css_path.toString());
+
+		while(html_text.indexOf("BACKGROUND_IMAGE_PATH") >= 0) {
+			html_text = html_text.replace("BACKGROUND_IMAGE_PATH", background_image.toString());
+		}
+
+
+		condition_panel.webview.html = html_text;
+		await commands.executeCommand("workbench.action.toggleZenMode");
+		condition_panel.onDidDispose(() => {
+			commands.executeCommand("workbench.action.exitZenMode");
+		}, null, context.subscriptions);
+	}));
 
 	// Start the client. This will also launch the server
 	client.start();
