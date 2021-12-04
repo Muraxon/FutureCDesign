@@ -24,6 +24,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import { CDesignParser } from './CDesignParser';
+import { start } from 'repl';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -60,7 +61,8 @@ connection.onInitialize((params: InitializeParams) => {
 			completionProvider: {},
 			signatureHelpProvider: {
 				triggerCharacters: ["."]
-			}
+			},
+			definitionProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -255,6 +257,23 @@ connection.onSignatureHelp((params, token, workdoen, resultProgress) => {
 		activeSignature: 0,
 		activeParameter: 0
 	}
+})
+
+connection.onDefinition((params) :Location[] => {
+	let doc = documents.get(params.textDocument.uri);
+	if(doc) {
+		let text = doc.getText({
+			end: {line: params.position.line, character: 10000},
+			start: {line: params.position.line, character: 0}
+		});
+
+		let reg = /:([0-9]+);([0-9]+);/gm
+		let m = reg.exec(text);
+		if(m) {
+			return [Location.create(params.textDocument.uri, {start: { line: params.position.line, character: 0}, end: {character: parseInt(m[1]), line: parseInt(m[2])}})];
+		}
+	}
+	return [];
 })
 
 // Make the text document manager listen on the connection

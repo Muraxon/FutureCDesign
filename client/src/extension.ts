@@ -5,7 +5,7 @@
 
 import { readFile, readFileSync } from 'fs';
 import * as path from 'path';
-import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview } from 'vscode';
+import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview, Location, LocationLink, Definition } from 'vscode';
 
 import {
 	LanguageClient,
@@ -26,8 +26,10 @@ function createWebViewLink(panel :WebviewPanel, ...paths :string[]) {
 	return panel.webview.asWebviewUri(onDiskPathtemp);
 }
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
 	extension_path = context.extensionPath;
+	let FilesImportattributes = await workspace.findFiles("**/*importattributes*");
+	
 
 	// The server is implemented in node
 	let serverModule = context.asAbsolutePath(
@@ -56,7 +58,28 @@ export function activate(context: ExtensionContext) {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
 		},
-		workspaceFolder: workspace.workspaceFolders[0]
+		workspaceFolder: workspace.workspaceFolders[0],
+		middleware: {
+			provideDefinition: async (doc, pos, token, next) => {
+				
+				let loc :LocationLink[]|Definition = await next(doc, pos, token);
+				if(loc && loc[0] && loc[0].range && loc[0].range.start) {
+					for (let index = 0; index < FilesImportattributes.length; index++) {
+						const element = FilesImportattributes[index];
+						let importattributesFile = await workspace.openTextDocument(element);
+						let text = importattributesFile.getText();
+						let searchText = new RegExp("^" + loc[0].range.start.character + "\\t" + loc[0].range.start.line + "\\t", "gm");
+
+						let found = text.search(searchText);
+						if(found >= 0) {
+							let pos = importattributesFile.positionAt(found);
+							return new Location(importattributesFile.uri, pos);
+						}
+					}
+				}
+				return [];
+			}
+		}
 	};
 
 	// Create the language client and start the client.
@@ -64,9 +87,10 @@ export function activate(context: ExtensionContext) {
 		'FutureC Design LanguageServer',
 		'Language Server für FutureC Designs',
 		serverOptions,
-		clientOptions
+		clientOptions		
 	);
 
+	
 	context.subscriptions.push(
 		commands.registerCommand("open.futurec.designer", async () => {
 			let editor = window.activeTextEditor;

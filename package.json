@@ -31,15 +31,15 @@
 				"configuration": "./language-configuration.json"
 			}
 		],
-		"configuration":{
+		"configuration": {
 			"title": "FutureC Design",
 			"properties": {
-				"FutureCDesign.Designzuordnung":{
-					"type":"object",
+				"FutureCDesign.Designzuordnung": {
+					"type": "object",
 					"description": "Zuordnung zu den Dateien"
 				},
 				"FutureCDesign.ShowHelpFirstTime": {
-					"type":"boolean",
+					"type": "boolean",
 					"default": true,
 					"description": "Soll die Hilfe angezeigt werden sobald der Designer geöffnet wird"
 				}
@@ -70,7 +70,8 @@
 					"when": "editorFocus && editorLangId == futurecdesign",
 					"command": "open.futurec.designer",
 					"group": "navigation"
-				},{
+				},
+				{
 					"when": "editorFocus && editorLangId == futurecdesign",
 					"command": "open.condition.selector",
 					"group": "navigation"
