@@ -83,12 +83,11 @@ select {
 	padding: 12px 20px;
 	margin: 8px 0;
 	display: inline-block;
-	border: 1px solid #ccc;
 	box-sizing: border-box;
 }
 
 .notsaved {
-	background-color: lightgrey !important;
+	background-color: #382a19 !important;
 }
 
 .saveAllButton {
@@ -153,6 +152,10 @@ select {
 
 .text_of_element {
 	width: fit-content;
+}
+
+input.text_of_element {
+	border: none;
 }
 
 .OK-Button:hover {
@@ -224,12 +227,10 @@ select {
 	text-decoration-color: rgb(255, 255, 255);
 	text-decoration-line: none;
 	text-decoration-style: solid;
-	text-decoration-thickness: auto;
 	transition-delay: 0s;
 	transition-duration: 0.1s;
 	transition-property: color, background-color, border-color;
 	transition-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
-	user-select: none;
 	vertical-align: middle;
 	white-space: nowrap;
 }
@@ -287,8 +288,6 @@ select {
 	transition-duration: 0.2s;
 	transition-property: color, background-color, border-color;
 	transition-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
-	user-select: none;
-	vertical-align: middle;
 	white-space: nowrap;
 }
 

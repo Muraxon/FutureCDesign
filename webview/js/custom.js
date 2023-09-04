@@ -3,7 +3,7 @@ import { dragmove } from './dragmove.js';
 
 const xFactor = 5;
 const yFactor = 40;
-const heightFactor = 20;
+const heightFactor = 19.16666666;
 
 const vscode = acquireVsCodeApi();
 let table = document.getElementById("tablenumber").content;
@@ -313,6 +313,7 @@ export function onStart(el, x, y) {
 	// from sticking on the screen.
 	el.style.top = el.offsetTop + "px";
 	el.style.bottom = "auto";
+
 }
 
 export function onEnd(el, x, y) {
@@ -321,9 +322,11 @@ export function onEnd(el, x, y) {
 		el.className += " notsaved";
 	}
 
+
 	document.getElementById("saveAllButton").style.display = "block";
 	// Automatically snap to corners.
-	if (el.style.top / 40 <= 0) {
+	console.log(el.style.top);
+	if (parseFloat(el.style.top) <= 0) {
 		el.style.top = "0px";
 	}
 	// if (window.innerWidth - (el.offsetLeft + el.offsetWidth) < snapThreshold) {

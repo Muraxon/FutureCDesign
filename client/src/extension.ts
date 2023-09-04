@@ -26,6 +26,91 @@ function createWebViewLink(panel :WebviewPanel, ...paths :string[]) {
 	return panel.webview.asWebviewUri(onDiskPathtemp);
 }
 
+
+function column_type_to_number(column_type :string) {
+	if(column_type == "TYPE_BOOL") {
+		return "1";
+	}
+	if(column_type == "TYPE_BYTE") {
+		return "2";
+	}
+	if(column_type == "TYPE_SHORT") {
+		return "3";
+	}
+	if(column_type == "TYPE_INT") {
+		return "4";
+	}
+	if(column_type == "TYPE_PERCENT") {
+		return "5";
+	}
+	if(column_type == "TYPE_DOUBLE") {
+		return "6";
+	}
+	if(column_type == "TYPE_FIXSTRING") {
+		return "10";
+	}
+	if(column_type == "TYPE_DATETIME") {
+		return "11";
+	}
+	if(column_type == "TYPE_MONEY") {
+		return "12";
+	}
+	if(column_type == "TYPE_LINK") {
+		return "21";
+	}
+	if(column_type == "TYPE_VARSTRING") {
+		return "30";
+	}
+	if(column_type == "TYPE_PICTURE") {
+		return "31";
+	}
+	if(column_type == "TYPE_VARDATA") {
+		return "32";
+	}
+	if(column_type == "TYPE_SUBTABLE") {
+		return "33";
+	}
+	if(column_type == "TYPE_LINKTABLE") {
+		return "34";
+	}
+	if(column_type == "TYPE_CTABLE") {
+		return "35";
+	}
+	if(column_type == "TYPE_CSTRING") {
+		return "40";
+	}
+	if(column_type == "TYPE_CSTRINGARRAY") {
+		return "42";
+	}
+	if(column_type == "TYPE_CGRAPHIC") {
+		return "43";
+	}
+	if(column_type == "TYPE_CALCULATION") {
+		return "44";
+	}
+	if(column_type == "TYPE_SCRIPT_CALCULATION") {
+		return "45";
+	}
+	if(column_type == "TYPE_FLOAT") {
+		return "50";
+	}
+	if(column_type == "TYPE_CDIALOG") {
+		return "50";
+	}
+	if(column_type == "TYPE_CCHAT") {
+		return "51";
+	}
+	if(column_type == "TYPE_CPRINTER") {
+		return "52";
+	}
+	if(column_type == "TYPE_CHELPER") {
+		return "53";
+	}
+	if(column_type == "TYPE_CFILE") {
+		return "54";
+	}
+}
+
 export async function activate(context: ExtensionContext) {
 	extension_path = context.extensionPath;
 	let FilesImportattributes = await workspace.findFiles("**/*importattributes*");
@@ -391,6 +476,121 @@ export async function activate(context: ExtensionContext) {
 		condition_panel.onDidDispose(() => {
 			commands.executeCommand("workbench.action.exitZenMode");
 		}, null, context.subscriptions);
+	}));
+
+	context.subscriptions.push(commands.registerCommand("create.database.column", async () => {
+
+		let tablenumbers = [];
+		let strTablenumber = await window.showInputBox({
+			ignoreFocusOut: true,
+			prompt: "Bitte geben Sie die Tabelle an, in der sie die Spalte erstellen wollen.",
+			title: "Tabellennummer"
+		});
+		
+		let nTablenumber = parseInt(strTablenumber);
+		if(nTablenumber >= 150 && nTablenumber <= 157) {
+			if(nTablenumber % 2 == 0) {
+				tablenumbers.push("150");
+				tablenumbers.push("152");
+				tablenumbers.push("154");
+				tablenumbers.push("156");
+			} else {
+				tablenumbers.push("151");
+				tablenumbers.push("153");
+				tablenumbers.push("155");
+				tablenumbers.push("157");
+			}
+		} else if(nTablenumber >= 185 && nTablenumber <= 189) {
+			if(nTablenumber % 2 == 0) {
+				tablenumbers.push("186");
+				tablenumbers.push("188");
+				tablenumbers.push("190");
+			} else {
+				tablenumbers.push("185");
+				tablenumbers.push("187");
+				tablenumbers.push("189");
+			}
+		} else {
+			tablenumbers.push(strTablenumber);
+		}
+
+		let strColumnName = await window.showInputBox({
+			ignoreFocusOut: true,
+			prompt: "Bitte geben Sie den Namen der Spalte ein.",
+			title: "Spaltenname"
+		});
+
+		let column_type = await window.showQuickPick([
+			"TYPE_BOOL",
+			"TYPE_BYTE",
+			"TYPE_SHORT",
+			"TYPE_INT",
+			"TYPE_PERCENT",
+			"TYPE_DOUBLE",
+			"TYPE_FIXSTRING",
+			"TYPE_DATETIME",
+			"TYPE_MONEY",
+			"TYPE_LINK",
+			"TYPE_VARSTRING",
+			"TYPE_PICTURE",
+			"TYPE_VARDATA",
+			"TYPE_SUBTABLE",
+			"TYPE_LINKTABLE",
+			"TYPE_CTABLE",
+			"TYPE_CSTRING",
+			"TYPE_CSTRINGARRAY",
+			"TYPE_CGRAPHIC",
+			"TYPE_CALCULATION",
+			"TYPE_SCRIPT_CALCULATION",
+			"TYPE_FLOAT",
+			"TYPE_CDIALOG",
+			"TYPE_CCHAT",
+			"TYPE_CPRINTER",
+			"TYPE_CHELPER",
+			"TYPE_CFILE"
+		], {
+			ignoreFocusOut: true,
+			canPickMany: false,
+			title: "Bitte wählen sie die Art der Spalte"
+		});
+
+		column_type = column_type_to_number(column_type);
+		let docText = window.activeTextEditor.document.getText()
+		let reg = new RegExp("^" + tablenumbers[0] + ".*?" + strColumnName, "gm");
+		let m = reg.exec(docText);
+		if(m) {
+			window.activeTextEditor.revealRange(new Range(window.activeTextEditor.document.positionAt(m.index), window.activeTextEditor.document.positionAt(m.index)), TextEditorRevealType.InCenter);
+			let answer = await window.showErrorMessage("Spaltenname in der Tabelle existiert bereits. Wollen Sie dennoch fortfahren?", "Ja", "Nein");
+			if(answer == "Nein") {
+				return;
+			}
+		}
+		
+		for(let x = 0; x < tablenumbers.length; x++) {
+			docText = window.activeTextEditor.document.getText()
+
+		
+			let m :RegExpExecArray | null = null;
+			let mFinal :RegExpExecArray | null = null;
+			let i = 5;
+			while(m || i == 5) {
+				let regex = new RegExp("^" + tablenumbers[x] + "\\t" + i.toString(), "gm");
+				mFinal = m;
+				m = regex.exec(docText);
+				i++;
+			}
+	
+			let start = mFinal.index;
+			start = docText.indexOf("\n", start + 1);
+			i--;
+	
+			await window.activeTextEditor.edit((editor) => {
+				let pos = new Position(window.activeTextEditor.document.positionAt(start).line + 1, 0);
+				editor.insert(pos, tablenumbers[x] + "\t"+i.toString()+"\t0\t"+strColumnName+"\t"+column_type+"\n");
+				window.activeTextEditor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
+			});
+
+		}
 	}));
 
 	// Start the client. This will also launch the server

@@ -57,7 +57,7 @@ export const dragmove = function(target, handler, onStart, onEnd) {
   // On leaving click, stop moving.
   document.addEventListener(_isTouch ? "touchend" : "mouseup", function(e) {   
 	if (onEnd && hasStarted) {
-	  onEnd(target, parseInt(target.style.left), parseInt(target.style.top));
+	  onEnd(target, parseFloat(target.style.left), parseFloat(target.style.top));
 	}
 
 	isMoving = false;
@@ -103,8 +103,8 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 			let real_start_x_temp = xClient - real_start_x;
 			let real_start_y_temp = yClient - real_start_y;
 			
-			real_start_x_temp = (parseInt(elements[x].style.left) + real_start_x_temp);
-			real_start_y_temp = (parseInt(elements[x].style.top) + real_start_y_temp);
+			real_start_x_temp = (parseFloat(elements[x].style.left) + real_start_x_temp);
+			real_start_y_temp = (parseFloat(elements[x].style.top) + real_start_y_temp);
 
 			real_start_x_temp = real_start_x_temp - (real_start_x_temp % 5);
 			real_start_y_temp = real_start_y_temp - (real_start_y_temp % 4);

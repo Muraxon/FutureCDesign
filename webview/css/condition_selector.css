@@ -3,6 +3,13 @@ body {
 	font-weight: 500;
 	font-size: 11px;
 	color: black;
+	overflow: hidden;
+    width: 1920px;
+    height: 1080px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin: 0px;
 }
 
 .table_wrapper {
@@ -99,4 +106,44 @@ tr {
 	height: fit-content;
 	right: 92px;
 	overflow: hidden;
+}
+
+.add_ctrl {
+	background-image: linear-gradient(rgb(221, 244, 255), rgb(221, 244, 255));
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	border-top-style: solid;
+	border-top-width: 1px;
+	box-sizing: border-box;
+	border-color: rgba(84,174,255,0.4);
+	z-index: 10;
+	position: absolute;
+	width: 95px;
+	height: 100px;
+	right: 92px;
+	height: 50px;
+	top: 61px;
+	cursor: pointer;
+}
+
+.add_ctrl:hover {
+	transition: 1s;
+	background-image: linear-gradient(rgb(221, 233, 255), rgb(221, 233, 255));
+}
+
+.add_ctrl_text {
+	position: relative;
+	margin: auto;
+	width: fit-content;
+	height: fit-content;
+	top: 50%;
+	transform: translateY(-50%);
 }

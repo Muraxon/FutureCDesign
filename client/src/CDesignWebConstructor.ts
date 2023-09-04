@@ -111,9 +111,9 @@ function escape_HTML(html_str :string) {
 }
 
 export class CDesign {
-	public static get xfactor() { return (150/30); }
+	public static get xfactor() { return (145/29); }
 	public static get yfactor() { return 40; }
-	public static get heightfactor() { return 20; }
+	public static get heightfactor() { return 23/1.2; }
 
 	constructor() {
 
@@ -374,7 +374,7 @@ export class CDesign {
 		}
 
 		dlgElementsMap.forEach((element, key) => {	
-			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute; border: 1px solid #7a7a7a;"`;
+			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute;"`;
 			let styleCheckboxDiv = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; position: absolute;"`;
 			let styleCheckbox = `style="cursor:pointer; background-color: <BACKGROUNDCOLOR>;"`;
 			let styleSeperator = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; height: 0px; position: absolute; border: 1px solid black;"`;
