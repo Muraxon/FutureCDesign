@@ -173,57 +173,70 @@ export function Postmessage(saveAll) {
 
 		element.className = element.className.replace(" notsaved", "");
 
+		let index = 0;
 		arr = [];
 		arr.push({
 			type: "TYPE=",
-			text: type
+			text: type,
+			order: index++
 		});
 		arr.push({
 			type: "PAGE=",
-			text: page
+			text: page,
+			order: index++
 		});
 		arr.push({
 			type: "XPOS=",
-			text: element.style.left
+			text: element.style.left,
+			order: index++
 		});
 		arr.push({
 			type: "YPOS=",
-			text: element.style.top
+			text: element.style.top,
+			order: index++
 		});
 		arr.push({
 			type: "WIDTH=",
-			text: element.style.width
+			text: element.style.width,
+			order: index++
 		});
 		arr.push({
 			type: "HEIGHT=",
-			text: element.style.height
+			text: element.style.height,
+			order: index++
 		});
 
 		arr.push({
 			type: "NEXTTABPOS=",
-			text: nexttab
+			text: nexttab,
+			order: index++
 		});
 		arr.push({
 			type: "NAMEPOSITION=",
-			text: nameposition
+			text: nameposition,
+			order: index++
 		});
 
 		arr.push({
 			type: "VISIBLE=",
-			text: visible
+			text: visible,
+			order: index++
 		});
 
 		arr.push({
 			type: "READONLY=",
-			text: readonly
+			text: readonly,
+			order: index++
 		});
 		arr.push({
 			type: "NAME=",
-			text: name
+			text: name,
+			order: index++
 		});
 		arr.push({
 			type: "ONCHANGE=",
-			text: onchange
+			text: onchange,
+			order: index++
 		});
 
 		allElementsChange.push({

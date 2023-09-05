@@ -291,6 +291,10 @@ export async function activate(context: ExtensionContext) {
 							case "saveChanges":
 								let new_editor = await window.showTextDocument(editor.document, ViewColumn.Active);
 		
+								messages[y].values.sort((a, b) => {
+									return a.order - b.order
+								})
+
 								for(let x = 0; x < messages[y].values.length; x++) {
 									let text = new_editor.document.getText();
 									let index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
