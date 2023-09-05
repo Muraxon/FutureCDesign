@@ -3,7 +3,7 @@
 	"description": "Ein Languageserver für designfiles",
 	"author": "Marcel Sotiropoulos <marcel.sotiropoulos@soti-it.at>",
 	"license": "MIT",
-	"version": "0.0.8",
+	"version": "0.0.10",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Muraxon/FutureCDesign"
