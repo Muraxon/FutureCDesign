@@ -189,7 +189,8 @@ export async function activate(context: ExtensionContext) {
 
 			filename = filename.replace(workspace.workspaceFolders[0].uri.fsPath + "\\", "");
 
-			if(designzuordnung[filename]) {
+			let module = designzuordnung[filename + ":MODULE"]
+			if(designzuordnung[filename] && module) {
 
 				let tablenumer = await window.showInputBox({
 					prompt: "Welche Tabellennummer?",
@@ -241,7 +242,7 @@ export async function activate(context: ExtensionContext) {
 				}
 				docs.push(editor.document);
 				
-				let obj = CDesign.CreateElements(docs, tablenumer, page);
+				let obj = CDesign.CreateElements(docs, tablenumer, page, module);
 				
 				let html_text = readFileSync(path.join(context.extensionPath, "webview", "html", "index.html")).toString("utf-8");
 				html_text = html_text.replace("DIALOG_HTML", obj.html);
@@ -440,11 +441,12 @@ export async function activate(context: ExtensionContext) {
 			} else {
 				window.showErrorMessage(
 				`ACHTUNG!!!
-				Für die Datei ${editor.document.fileName} wurde keine Designzuordnung gefunden. Bitte gehen Sie in die Einstellung und hinterlegen sie eine passende Zuordnung.
+				Für die Datei ${editor.document.fileName} wurde keine Designzuordnung oder Module gefunden. Bitte gehen Sie in die Einstellung und hinterlegen sie eine passende Zuordnung.
 				Diese könnte wiefolgt aufgebaut sein:
 				"Standard\\auftrag - design.txt": [
 					"Tempordner\\Testdesign.txt"
 				]
+				"Standard\\auftrag - design.txt:MODULE": ["30","20","40","20"]
 				Diese Einstellung bedeutet: Für die Datei "auftrag - design.txt" wird die Datei "Testdesign.txt" vorher durchsucht und dann erst die Datei "auftrag - design.txt"
 				`, {
 					modal: true

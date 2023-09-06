@@ -7,7 +7,9 @@ class DlgElement {
 	m_Type :string;
 	m_Name :string;
 	m_Xpos :string;
+	m_XposFuture :string;
 	m_YPos :string;
+	m_YPosFuture :string;
 	m_Visible :string;
 	m_Readonly :string;
 	m_NextTabPos :string;
@@ -20,11 +22,14 @@ class DlgElement {
 	m_Column :string;
 	m_Table :string;
 	m_OnChange :string;
+	m_Module1 :string;
 
 	constructor(Type :string,
 				Name :string,
 				Xpos :string,
+				XposFuture :string,
 				YPos :string,
+				YPosFuture :string,
 				Visible :string,
 				Readonly :string,
 				NextTabPos :string,
@@ -36,11 +41,14 @@ class DlgElement {
 				BrowserWidth :string,
 				Column :string,
 				Table :string,
-				OnChange :string) {
+				OnChange :string,
+				module1 :string) {
 		this.m_Type = Type;
 		this.m_Name = Name;
 		this.m_Xpos = Xpos;
+		this.m_XposFuture = XposFuture;
 		this.m_YPos = YPos;
+		this.m_YPosFuture = YPosFuture;
 		this.m_Visible = Visible;
 		this.m_Readonly = Readonly;
 		this.m_NextTabPos = NextTabPos;
@@ -53,6 +61,7 @@ class DlgElement {
 		this.m_Column = Column;
 		this.m_Table = Table;
 		this.m_OnChange = OnChange;
+		this.m_Module1 = module1;
 	}
 
 	public updateElement(new_element :DlgElement) {
@@ -69,6 +78,13 @@ class DlgElement {
 			if(new_element.m_YPos.length > 0) {
 				this.m_YPos = new_element.m_YPos;
 			}
+			if(new_element.m_XposFuture.length > 0) {
+				this.m_XposFuture = new_element.m_XposFuture;
+			}
+			if(new_element.m_YPosFuture.length > 0) {
+				this.m_YPosFuture = new_element.m_YPosFuture;
+			}
+
 			if(new_element.m_Visible.length > 0) {
 				this.m_Visible = new_element.m_Visible;
 			}
@@ -77,6 +93,12 @@ class DlgElement {
 			}
 			if(new_element.m_NextTabPos.length > 0) {
 				this.m_NextTabPos = new_element.m_NextTabPos;
+			}
+			if(new_element.m_Page.length > 0) {
+				this.m_Page = new_element.m_Page;
+			}
+			if(new_element.m_NamePosition.length > 0) {
+				this.m_NamePosition = new_element.m_NamePosition;
 			}
 			if(new_element.m_FutureHeight.length > 0) {
 				this.m_FutureHeight = new_element.m_FutureHeight;
@@ -98,6 +120,9 @@ class DlgElement {
 			}
 			if(new_element.m_OnChange.length > 0) {
 				this.m_OnChange = new_element.m_OnChange;
+			}
+			if(new_element.m_Module1.length > 0) {
+				this.m_Module1 = new_element.m_Module1;
 			}
 		}
 	}
@@ -180,7 +205,7 @@ export class CDesign {
 		return value;
 	}
 
-	static CreateElements(docs :TextDocument[], tablenumber :string, page:string) {
+	static CreateElements(docs :TextDocument[], tablenumber :string, page:string, module :string[]) {
 		let i = 0;
 		let html_text = "";
 		let css_text = "";
@@ -189,6 +214,7 @@ export class CDesign {
 		let dlgElementsMap :Map<string, DlgElement> = new Map();
 
 		let search = ["ADDDIALOGELEMENT:", "CHANGEDIALOGELEMENT:"];
+		let prevKey = "";
 
 		for(let doc_idx = 0; doc_idx < docs.length; doc_idx++) {
 			for(let index = 0; index < search.length; index++) {
@@ -197,10 +223,10 @@ export class CDesign {
 					let linetext = docs[doc_idx].lineAt(i);
 	
 					if(linetext.text.search(search[index] + tablenumber) >= 0) {
-						let reg = /XPOS=([0-9.%B]+);/gm;
+						let reg = /XPOS=([0-9.%B+-]+);/gm;
 						let m = reg.exec(linetext.text);
 		
-						let regY = /YPOS=([0-9.%B]+);/gm;
+						let regY = /YPOS=([0-9.%B+-]+);/gm;
 						let mY = regY.exec(linetext.text);
 		
 						let regPage = new RegExp("PAGE=([0-9]+)", "gm");
@@ -212,10 +238,10 @@ export class CDesign {
 							}
 						}
 		
-						let regHidden = /VISIBLE=(1)/gm;
+						let regHidden = /VISIBLE=(1|0)/gm;
 						let mHidden = regHidden.exec(linetext.text);
 						
-						let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9()\/\\%\.\-\<\>]+);/gm;
+						let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9€()\/\\%\.\-\<\>]+);/gm;
 						let mName = regName.exec(linetext.text);
 						
 						let regWidth = /WIDTH=([0-9.%B]+);/gm;
@@ -253,9 +279,20 @@ export class CDesign {
 						} else {
 							mREADONLY = "";
 						}
+
+						let regModule1 = /MODULE1=([0-9]+);?/gm;
+						let mModule1 :RegExpExecArray|string = regModule1.exec(linetext.text);
 						
+
 						let regColumn = new RegExp(":" + tablenumber + ";([0-9]+);", "gm");
 						let mColumn = regColumn.exec(linetext.text);
+						if(mColumn && mColumn[1] && mColumn[1] == "0") {
+							let regNameWithoutColumn = new RegExp(":" + tablenumber + ";[0-9]+;([a-zA-Z öäüÖÄÜß0-9€()\/\\%\.\-\<\>]+);", "gm");
+							let mNameWithoutColumn = regNameWithoutColumn.exec(linetext.text);
+							if(mNameWithoutColumn && mNameWithoutColumn[1]) {
+								mName = mNameWithoutColumn;
+							}
+						}
 		
 						let onchangeOffset = linetext.text.indexOf("ONCHANGE=");
 						let onchangeText = "";
@@ -281,92 +318,155 @@ export class CDesign {
 							onchangeText = linetext.text.substring(startOnChange, onchangeOffset);
 						}
 		
-						if(m && mY && mPage && mHidden && mWidth && mType && mHeight && mColumn) {
-							let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
-							
-							let futureHeight = mHeight[1];
-							let futureWidth = mWidth[1];
 
-							let xpos :string|number = futuretobrowser(parseFloat(m[1]), CDesign.xfactor);
-		
-							let xposlabel :string|number = xpos;
-							let xposTextlabel :string|number = xpos;
-		
-							let name = "";
-							let elementName = "";
-							if(mName && mName[1]) {
-								name = "" + mName[1] + mColumn[1];
-								elementName = mName[1];
-							}
-		
-							if(m[1].search("%") >= 0) {
-								xpos = m[1]; 
-								xposlabel = m[1]; 
-								xposTextlabel = m[1];
-							} else {
-								if(parseInt(mType[1]) == 15) {
-									xposlabel = parseFloat(xposlabel) + 20;
-									xposlabel = "" + xposlabel + "px";
+						// m && mColumn && moduleFound && mY && mPage && mHidden && mWidth && mType && mHeight &&
+						let name = "";
+						let elementName = "";
+						if(mName && mName[1]) {
+							name = "" + mName[1] + mColumn[1];
+							elementName = mName[1];
+						}
+
+						if(elementName == "Preise Verkauf") {
+							console.log("test");
+						}
+
+						let key = tablenumber+"-"+mColumn[1];
+						if(mColumn[1] == "0") {
+							key += "-" + elementName;
+						}
+						let oldElement : null | DlgElement = null;
+						if(dlgElementsMap.has(key)) {
+							oldElement = dlgElementsMap.get(key);
+						}
+
+						let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
+						
+						let heightFuture = mHeight ? mHeight[1] : oldElement ? oldElement.m_FutureHeight : "1.2";
+						let widthFuture = mWidth ? mWidth[1] : oldElement ? oldElement.m_FutureWidth : "29";
+
+	
+						let xposFuture = "";
+						if(m && m[1]) {
+							xposFuture = m[1];
+						} else {
+							xposFuture = oldElement ? oldElement.m_XposFuture : "0";
+						}
+
+						let yposFuture = "";
+						if(mY && mY[1]) {
+							yposFuture = mY[1];
+						} else {
+							yposFuture = oldElement ? oldElement.m_YPosFuture : "0";
+						}
+
+						if(xposFuture.charAt(0) == "+") {
+							let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
+							if(prevElement) {
+								xposFuture = "" + (parseFloat(prevElement.m_XposFuture) + parseFloat(prevElement.m_FutureWidth) + parseFloat(xposFuture.substring(1)));
+								if(prevElement.m_FutureWidth.charAt(prevElement.m_FutureWidth.length - 1) == "%") {
+									xposFuture += "%";
 								}
-								xposTextlabel = parseFloat(xposTextlabel) - (9 + (7 * name.length));
-								xposTextlabel = xposTextlabel + "px";
-								xpos = "" + xpos + "px";
-							}
-							let ypos :string|number = futuretobrowser(parseFloat(mY[1]), CDesign.yfactor);
-							if(mY[1].search("%") >= 0) {
-								ypos = mY[1]; 
-							} else {
-								ypos = "" + ypos + "px";
-							}
-							if(mY[1].charAt(mY[1].length - 1) == "B") {
-								ypos = (parseFloat(mY[1].substring(0, mY[1].length - 1)) * 100)  + "vw";
-							}
-							
-							let width :string|number = futuretobrowser(parseFloat(mWidth[1]), CDesign.xfactor);
-							if(mWidth[1].search("%") >= 0) {
-								width = mWidth[1];
-							} else {
-								width = "" + width + "px";
-							}
-		
-							if(mWidth[1].charAt(mWidth[1].length - 1) == "B") {
-								if(mWidth[1].substring(0, mWidth[1].length - 1) != "0") {
-									width = (parseFloat(mWidth[1].substring(0, mWidth[1].length - 1)) * 100)  + "vw";
-								} else {
-									width = "100vw";
-								}
-							}
-							
-							let height :string|number = futuretobrowser(parseFloat(mHeight[1]), CDesign.heightfactor);
-							//height--;
-							if(mHeight[1].search("%") >= 0) {
-								height = mHeight[1];
-							} else {
-								height = "" + height + "px";
-							}
-							if(mHeight[1].charAt(mHeight[1].length - 1) == "B") {
-								height = (parseFloat(mHeight[1].substring(0, mHeight[1].length - 1)) * 100)  + "vw";
-							}
-							/*
-								x:0 - y:0 -> x:0 - y:0
-								x:307 - y:21.5 -> x:1920 - y:1080
-								y:1 == 50,23
-								x:1 == 6,25
-		
-								${"x:" + xpos + " y:" + ypos}
-							*/
-			
-							let newElement = new DlgElement(mType[1], elementName, xpos, ypos, mHidden[1], mREADONLY, mNEXTTABPOS, mPage[1], mNameposition, futureHeight, height, futureWidth, width, mColumn[1], tablenumber, onchangeText);
-							let key = tablenumber+"-"+mColumn[1];
-							if(mColumn[1] == "0") {
-								key += elementName;
-							}
-							if(dlgElementsMap.has(key)) {
-								dlgElementsMap.get(key).updateElement(newElement);
-							} else {
-								dlgElementsMap.set(key, newElement);
 							}
 						}
+						if(mColumn[1] == "139") {
+							console.log("test");
+						}
+						
+						if(yposFuture.charAt(0) == "+") {
+							let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
+							if(prevElement) {
+								yposFuture = "" + (parseFloat(prevElement.m_YPosFuture) + parseFloat(prevElement.m_FutureHeight) + parseFloat(yposFuture.substring(1)));
+
+								if(prevElement.m_FutureHeight.charAt(prevElement.m_FutureHeight.length - 1) == "%") {
+									yposFuture += "%";
+								}
+							}
+						}
+
+						let typeFuture = mType ? mType[1] ? mType[1] : oldElement ? oldElement.m_Type : "1" : oldElement ? oldElement.m_Type : "1";
+						let visibleFuture =  mHidden ? mHidden[1] ?  mHidden[1] : oldElement ? oldElement.m_Visible : "1" : oldElement ? oldElement.m_Visible : "1";
+						let pageFuture = mPage ? mPage[1] ? mPage[1] : oldElement ? oldElement.m_Page : "1" : oldElement ? oldElement.m_Page : "1";
+						let module1Future = mModule1 ? mModule1[1] ? mModule1[1] : oldElement ? oldElement.m_Module1 : "" : oldElement ? oldElement.m_Module1 : "";
+
+
+
+						let xpos :string|number = futuretobrowser(parseFloat(xposFuture), CDesign.xfactor);
+	
+						let xposlabel :string|number = xpos;
+						let xposTextlabel :string|number = xpos;
+	
+	
+						if(xposFuture.search("%") >= 0) {
+							xpos = xposFuture; 
+							xposlabel = xposFuture; 
+							xposTextlabel = xposFuture;
+						} else {
+							if(parseInt(typeFuture) == 15) {
+								xposlabel = parseFloat(xposlabel) + 20;
+								xposlabel = "" + xposlabel + "px";
+							}
+							xposTextlabel = parseFloat(xposTextlabel) - (9 + (7 * name.length));
+							xposTextlabel = xposTextlabel + "px";
+							xpos = "" + xpos + "px";
+						}
+
+
+						let ypos :string|number = futuretobrowser(parseFloat(yposFuture), CDesign.yfactor);
+						if(yposFuture.search("%") >= 0) {
+							ypos = yposFuture; 
+						} else {
+							ypos = "" + ypos + "px";
+						}
+						if(yposFuture.charAt(yposFuture.length - 1) == "B") {
+							ypos = (parseFloat(yposFuture.substring(0, yposFuture.length - 1)) * 100)  + "vw";
+						}
+						
+						let width :string|number = futuretobrowser(parseFloat(widthFuture), CDesign.xfactor);
+						if(widthFuture.search("%") >= 0) {
+							width = widthFuture;
+						} else {
+							width = "" + width + "px";
+						}
+	
+						if(widthFuture.charAt(widthFuture.length - 1) == "B") {
+							if(widthFuture.substring(0, widthFuture.length - 1) != "0") {
+								width = (parseFloat(widthFuture.substring(0, widthFuture.length - 1)) * 100)  + "vw";
+							} else {
+								width = "100vw";
+							}
+						}
+						
+						let height :string|number = futuretobrowser(parseFloat(heightFuture), CDesign.heightfactor);
+						//height--;
+						if(heightFuture.search("%") >= 0) {
+							height = heightFuture;
+						} else {
+							height = "" + height + "px";
+						}
+						if(heightFuture.charAt(heightFuture.length - 1) == "B") {
+							height = (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * 100)  + "vw";
+						}
+
+
+						
+						/*
+							x:0 - y:0 -> x:0 - y:0
+							x:307 - y:21.5 -> x:1920 - y:1080
+							y:1 == 50,23
+							x:1 == 6,25
+	
+							${"x:" + xpos + " y:" + ypos}
+						*/
+
+						
+						let newElement = new DlgElement(typeFuture, elementName, xpos, xposFuture, ypos, yposFuture, visibleFuture, mREADONLY, mNEXTTABPOS, pageFuture, mNameposition, heightFuture, height, widthFuture, width, mColumn[1], tablenumber, onchangeText, module1Future);
+						if(dlgElementsMap.has(key)) {
+							dlgElementsMap.get(key).updateElement(newElement);
+						} else {
+							dlgElementsMap.set(key, newElement);
+						}
+						prevKey = key;
 					}
 					i++;
 				}
@@ -374,6 +474,7 @@ export class CDesign {
 		}
 
 		dlgElementsMap.forEach((element, key) => {	
+
 			let styleTextField = `style="cursor:pointer; resize:none; background-color: <BACKGROUNDCOLOR>; height: ${element.m_BrowserHeight}; top: ${element.m_YPos}; left: ${element.m_Xpos}; width: ${element.m_BrowserWidth}; position: absolute;"`;
 			let styleCheckboxDiv = `style="cursor:pointer; top: ${element.m_YPos}; left: ${element.m_Xpos}; position: absolute;"`;
 			let styleCheckbox = `style="cursor:pointer; background-color: <BACKGROUNDCOLOR>;"`;
@@ -443,9 +544,15 @@ export class CDesign {
 				id="${tablenumber+"-"+element.m_Column}"
 			`);
 
-			let newHtml = pages_text.get(element.m_Page) + html_text;
-			pages_text.set(element.m_Page, newHtml);
+			let moduleFound = true;
+			if(element.m_Module1.length > 0) {
+				moduleFound = (module.indexOf(element.m_Module1) >= 0)
+			}
 
+			if(moduleFound && element.m_Type != "200" && element.m_Type != "1") {
+				let newHtml = pages_text.get(element.m_Page) + html_text;
+				pages_text.set(element.m_Page, newHtml);
+			}
 		})
 		
 		let button_html = "";
