@@ -5,7 +5,7 @@
 
 import { readFile, readFileSync } from 'fs';
 import * as path from 'path';
-import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview, Location, LocationLink, Definition } from 'vscode';
+import { workspace, ExtensionContext, window, commands, ViewColumn, env, Uri, TextEdit, Range, Position, TextEditorRevealType, Selection, WebviewPanel, Webview, Location, LocationLink, Definition, EndOfLine } from 'vscode';
 
 import {
 	LanguageClient,
@@ -233,8 +233,16 @@ export async function activate(context: ExtensionContext) {
 				const custom_js_path = createWebViewLink(panel, "webview", "js", "custom.js");
 				const custom_css_path = createWebViewLink(panel, "webview", "css", "main.css");
 				const drag_drop_video = createWebViewLink(panel, "webview", "media", "Drag_Drop_Multiple_elements.gif");
+				const media_path = createWebViewLink(panel, "webview", "media");
 
 				let docs = [];
+
+				for (let index = 0; index < FilesImportattributes.length; index++) {
+					const element = FilesImportattributes[index];
+					let doc = await workspace.openTextDocument(element);
+					docs.push(doc);
+				}
+
 				for(let x = 0; x < designzuordnung[filename].length; x++) {
 					let new_file = workspace.workspaceFolders[0].uri.fsPath + "\\" +  designzuordnung[filename][x];
 					let doc = await workspace.openTextDocument(new_file);
@@ -258,6 +266,10 @@ export async function activate(context: ExtensionContext) {
 				html_text = html_text.replace("MAIN_STYLES_PATH", custom_css_path.toString());
 				html_text = html_text.replace("DRAG_DROP_VIDEO", drag_drop_video.toString());
 				html_text = html_text.replace("VERSION_NUMBER", context.extension.packageJSON.version);
+				while(html_text.indexOf("MEDIA_PATH") >= 0) {
+					html_text = html_text.replace("MEDIA_PATH", media_path.toString());
+				}
+
 			
 				panel.webview.html = html_text;
 				panel.webview.onDidReceiveMessage(async (messages) => {
@@ -299,7 +311,7 @@ export async function activate(context: ExtensionContext) {
 								for(let x = 0; x < messages[y].values.length; x++) {
 									let text = new_editor.document.getText();
 									let index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";");
-									if(messages[y].type == 45) {
+									if(messages[y].type == 45 || messages[y].type == 4) {
 										index = text.lastIndexOf("CHANGEDIALOGELEMENT:" + messages[y].table + ";0;" + messages[y].name);
 									}
 	
@@ -390,14 +402,31 @@ export async function activate(context: ExtensionContext) {
 										let searchColumn = parseInt(messages[y].column) - 1;
 										let tabletoSearch = parseInt(messages[y].table);
 										let index = -1;
-										while(index < 0 && searchColumn > 1 && tabletoSearch > 0) {
-											index = text.search("CHANGEDIALOGELEMENT:" + tabletoSearch + ";" + searchColumn + ";");
-											searchColumn--;
 
-											if(searchColumn <= 1) {
-												tabletoSearch--;
-												searchColumn = 1000;
+										let value_no_columns = "";
+										let increment = false;
+										if(messages[y].type == 45 || messages[y].type == 4) {
+											value_no_columns = messages[y].name + ";";
+											increment = true;
+											searchColumn = 1;
+										}
+
+										while(index < 0 && searchColumn >= 1 && searchColumn < 1000 && tabletoSearch > 0 && tabletoSearch < 1000) {
+											index = text.search("CHANGEDIALOGELEMENT:" + tabletoSearch + ";" + searchColumn + ";");
+											if(!increment) {
+												searchColumn--;
+												if(searchColumn <= 1) {
+													tabletoSearch--;
+													searchColumn = 1000;
+												}
+											} else {
+												searchColumn++;
+												if(searchColumn > 1000) {
+													tabletoSearch++;
+													searchColumn = 0;
+												}
 											}
+
 										}
 
 										if(index < 0) {
@@ -405,12 +434,15 @@ export async function activate(context: ExtensionContext) {
 										}
 	
 										messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
-	
+
 										let endofLine = text.indexOf("\n", index + 4);
 										endofLine++;
+										if(increment) {
+											endofLine = index;
+										}
 										await new_editor.edit((editBuilder) => {
 											let pos = new_editor.document.positionAt(endofLine);
-											let text = "CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";" + messages[y].values[x].type + messages[y].values[x].text + ";\n";
+											let text = "CHANGEDIALOGELEMENT:" + messages[y].table + ";" + messages[y].column + ";" + value_no_columns + messages[y].values[x].type + messages[y].values[x].text + ";\n";
 											editBuilder.insert(pos, text);
 											new_editor.revealRange(new Range(pos, pos), TextEditorRevealType.InCenter);
 										});

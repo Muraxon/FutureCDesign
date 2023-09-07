@@ -158,6 +158,10 @@ input.text_of_element {
 	border: none;
 }
 
+.marked_for_keyboard_handling {
+	background: green !important;
+}
+
 .OK-Button:hover {
 	background-color: rgb(45, 156, 77);
 }
@@ -361,4 +365,17 @@ input.text_of_element {
 
 .ACTIVE_PAGE_BUTTON {
 	background-color: green !important;
+}
+
+.element_image {
+	position: absolute;
+    left: 100%;
+    transform: translate(-100%, 0px);
+    top: 0px;
+}
+
+.element_image_linked_table {
+	position: absolute;
+    left: 0px;
+    top: 0px;
 }

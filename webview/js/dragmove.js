@@ -5,7 +5,7 @@
 
 let _loaded = false;
 let _callbacks = [];
-const _isTouch = window.ontouchstart !== undefined;
+const _isTouch = false;
 
 export const dragmove = function(target, handler, onStart, onEnd) {
   // Register a global event to capture mouse moves (once).
@@ -41,6 +41,10 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 	  return;
 	}
 
+	if(target.className.indexOf("marked_for_keyboard_handling") < 0) {
+		target.className += " marked_for_keyboard_handling";
+	}
+
 	let c = e;
 	if (e.touches) {
 	  c = e.touches[0];
@@ -59,13 +63,13 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 	if (onEnd && hasStarted) {
 	  onEnd(target, parseFloat(target.style.left), parseFloat(target.style.top));
 	}
-
+	
 	isMoving = false;
 	hasStarted = false;
-  });
+});
 
-  // Register mouse-move callback to move the element.
-  _callbacks.push(function move(x, y, c) {
+// Register mouse-move callback to move the element.
+_callbacks.push(function move(x, y, c) {
 	if (!isMoving) {
 	  return;
 	}

@@ -23,16 +23,25 @@ export function openOtherTab(newActiveIndex) {
 	let temp = value.style.width;
 	value.style.width = "10000px";
 
-	if(value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) {
+	if((value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) || value.getAttribute("data-type") == 45) {
 		value.children[0].style.left = "0px";
 		value.children[0].style.position = "relative";
 		value.children[0].style.top = "-15px";
 	} else {
 		if(value.children) {
 			let i = 0;
+
+
+
 			while(value.children[i] && value.children[i].innerHTML && value.children[i].innerHTML.length > 0) {
 				value.children[i].style.width = "fit-content";
-				value.children[i].style.left = "-" + (value.children[i].offsetWidth + 6) + "px";
+				if(value.getAttribute("data-type") != 4) {
+					value.children[i].style.left = "-" + (value.children[i].offsetWidth + 6) + "px";
+				} else {
+					value.children[i].style.left = "+40px";
+
+					value.children[i].style.backgroundColor = "#c7d5e6"
+				}
 				value.children[i].style.width = "" + (value.children[i].offsetWidth + 5) + "px";
 				value.children[i].style.position = "relative";
 				value.children[i].style.top = "50%";
@@ -517,6 +526,14 @@ $(document).ready(() => {
 				offsetX: event.offsetX
 			}]);
 		}
+	});
+
+
+	window.addEventListener("keydown", (ev) => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		
 	});
 
 	
