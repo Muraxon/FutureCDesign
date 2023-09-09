@@ -41,8 +41,8 @@ export const dragmove = function(target, handler, onStart, onEnd) {
 	  return;
 	}
 
-	if(target.className.indexOf("marked_for_keyboard_handling") < 0) {
-		target.className += " marked_for_keyboard_handling";
+	if(target.className.indexOf("marked_for_group_drag") < 0) {
+		target.className += " marked_for_group_drag";
 	}
 
 	let c = e;

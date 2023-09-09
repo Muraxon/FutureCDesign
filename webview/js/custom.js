@@ -23,9 +23,9 @@ export function openOtherTab(newActiveIndex) {
 	let temp = value.style.width;
 	value.style.width = "10000px";
 
-	if((value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) || value.getAttribute("data-type") == 45) {
+	if((value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) || value.getAttribute("data-type") == 45 || value.getAttribute("data-type") == 232) {
 		value.children[0].style.left = "0px";
-		value.children[0].style.position = "relative";
+		value.children[0].style.position = "absolute";
 		value.children[0].style.top = "-15px";
 	} else {
 		if(value.children) {
@@ -126,12 +126,12 @@ export function Postmessage(saveAll) {
 			element.setAttribute("data-name", name);
 			element.setAttribute("data-height", elementheight);
 			element.setAttribute("data-width", elementwidth);
-			if (type != 15) {
+			if (type != "15") {
 				element.children[0].innerHTML = name;
 				if (element.children[0].innerHTML && element.children[0].innerHTML.length > 0) {
 
 
-					if (nameposition == 1 && type != 15) {
+					if (nameposition == 1 && type != "15") {
 						element.children[0].style.left = "0px";
 						element.children[0].style.position = "relative";
 						element.children[0].style.top = "-15px";
@@ -181,7 +181,13 @@ export function Postmessage(saveAll) {
 		}
 
 		element.className = element.className.replace(" notsaved", "");
-
+		let elHeight = element.style.height;
+		let elWidth = element.style.width;
+		if(type == "15") {
+			elHeight = elementheight;
+			elWidth = elementwidth;
+		}
+		
 		let index = 0;
 		arr = [];
 		arr.push({
@@ -206,12 +212,12 @@ export function Postmessage(saveAll) {
 		});
 		arr.push({
 			type: "WIDTH=",
-			text: element.style.width,
+			text: elWidth,
 			order: index++
 		});
 		arr.push({
 			type: "HEIGHT=",
-			text: element.style.height,
+			text: elHeight,
 			order: index++
 		});
 
@@ -423,7 +429,7 @@ $(document).ready(() => {
 		document.getElementById(activeIndex).appendChild(el);
 	
 		
-		let elements = document.getElementById(activeIndex).querySelectorAll(".Draggable");
+		let elements = document.querySelectorAll(".Draggable");
 		elements.forEach((el) => {
 			while(el.className.indexOf(" marked_for_group_drag") >= 0) {
 				el.className = el.className.replace(" marked_for_group_drag", "");
@@ -474,46 +480,49 @@ $(document).ready(() => {
 	
 			let elements = document.getElementById(activeIndex).querySelectorAll(".Draggable");
 			elements.forEach((el) => {
-				//if(el.style.width
-				//el.style.height
-				let x_pos_top_left_element = parseFloat(el.style.left);
-				let y_pos_top_left_element = parseFloat(el.style.top);
-	
-				let x_pos_bottom_right_element = x_pos_top_left_element + parseFloat(el.style.width);
-				let y_pos_bottom_right_element = y_pos_top_left_element + parseFloat(el.style.height);
-				
-				
-				let x_pos_top_left_dragArea = parseFloat(dragArea.style.left);
-				let y_pos_top_left_dragArea = parseFloat(dragArea.style.top);
-				
-				let x_pos_bottom_right_dragArea = x_pos_top_left_dragArea + parseFloat(dragArea.style.width);
-				let y_pos_bottom_right_dragArea = y_pos_top_left_dragArea + parseFloat(dragArea.style.height);
-	
-	
-				if(((x_pos_top_left_element > x_pos_top_left_dragArea &&
-					x_pos_top_left_element < x_pos_bottom_right_dragArea)
-					||
-					(x_pos_bottom_right_element > x_pos_top_left_dragArea &&
-					x_pos_bottom_right_element < x_pos_bottom_right_dragArea)
-					||
-					(x_pos_top_left_dragArea > x_pos_top_left_element && 
-					x_pos_top_left_dragArea < x_pos_bottom_right_element))
-					&&
-					((y_pos_top_left_element > y_pos_top_left_dragArea &&
-					y_pos_top_left_element < y_pos_bottom_right_dragArea)
-					||
-					(y_pos_bottom_right_element > y_pos_top_left_dragArea &&
-					y_pos_bottom_right_element < y_pos_bottom_right_dragArea)
-					||
-					(y_pos_top_left_dragArea > y_pos_top_left_element && 
-					y_pos_top_left_dragArea < y_pos_bottom_right_element))
-					) {
-	
-					if(el.className.indexOf("marked_for_group_drag") < 0) {
-						el.className += " marked_for_group_drag";
+
+				if(el.getAttribute("data-visible") == 1) {
+
+					//if(el.style.width
+					//el.style.height
+					let x_pos_top_left_element = parseFloat(el.style.left);
+					let y_pos_top_left_element = parseFloat(el.style.top);
+		
+					let x_pos_bottom_right_element = x_pos_top_left_element + parseFloat(el.style.width);
+					let y_pos_bottom_right_element = y_pos_top_left_element + parseFloat(el.style.height);
+					
+					
+					let x_pos_top_left_dragArea = parseFloat(dragArea.style.left);
+					let y_pos_top_left_dragArea = parseFloat(dragArea.style.top);
+					
+					let x_pos_bottom_right_dragArea = x_pos_top_left_dragArea + parseFloat(dragArea.style.width);
+					let y_pos_bottom_right_dragArea = y_pos_top_left_dragArea + parseFloat(dragArea.style.height);
+		
+		
+					if(((x_pos_top_left_element > x_pos_top_left_dragArea &&
+						x_pos_top_left_element < x_pos_bottom_right_dragArea)
+						||
+						(x_pos_bottom_right_element > x_pos_top_left_dragArea &&
+						x_pos_bottom_right_element < x_pos_bottom_right_dragArea)
+						||
+						(x_pos_top_left_dragArea > x_pos_top_left_element && 
+						x_pos_top_left_dragArea < x_pos_bottom_right_element))
+						&&
+						((y_pos_top_left_element > y_pos_top_left_dragArea &&
+						y_pos_top_left_element < y_pos_bottom_right_dragArea)
+						||
+						(y_pos_bottom_right_element > y_pos_top_left_dragArea &&
+						y_pos_bottom_right_element < y_pos_bottom_right_dragArea)
+						||
+						(y_pos_top_left_dragArea > y_pos_top_left_element && 
+						y_pos_top_left_dragArea < y_pos_bottom_right_element))
+						) {
+		
+						if(el.className.indexOf("marked_for_group_drag") < 0) {
+							el.className += " marked_for_group_drag";
+						}
 					}
 				}
-				
 			})
 	
 			document.getElementById(activeIndex).removeChild(document.getElementById("DRAG_AREA"));
@@ -532,8 +541,63 @@ $(document).ready(() => {
 	window.addEventListener("keydown", (ev) => {
 		ev.preventDefault();
 		ev.stopPropagation();
-
 		
+		if(ev.key == "ArrowDown") {
+			let elements = document.getElementsByClassName("marked_for_group_drag");
+			for (let index = 0; index < elements.length; index++) {
+				let elementToMove = elements[index];
+				let top = elementToMove.style.top;
+				top = parseFloat(top);
+				top += 4
+				elementToMove.style.top = "" + top + "px";
+				if (elementToMove.className.search("notsaved") < 0) {
+					elementToMove.className += " notsaved";
+				}
+				document.getElementById("saveAllButton").style.display = "block";
+			}
+		}
+		if(ev.key == "ArrowUp") {
+			let elements = document.getElementsByClassName("marked_for_group_drag");
+			for (let index = 0; index < elements.length; index++) {
+				let elementToMove = elements[index];
+				let top = elementToMove.style.top;
+				top = parseFloat(top);
+				top -= 4
+				elementToMove.style.top = "" + top + "px";
+				if (elementToMove.className.search("notsaved") < 0) {
+					elementToMove.className += " notsaved";
+				}
+				document.getElementById("saveAllButton").style.display = "block";
+			}
+		}
+		if(ev.key == "ArrowLeft") {
+			let elements = document.getElementsByClassName("marked_for_group_drag");
+			for (let index = 0; index < elements.length; index++) {
+				let elementToMove = elements[index];
+				let left = elementToMove.style.left;
+				left = parseFloat(left);
+				left -= 5
+				elementToMove.style.left = "" + left + "px";
+				if (elementToMove.className.search("notsaved") < 0) {
+					elementToMove.className += " notsaved";
+				}
+				document.getElementById("saveAllButton").style.display = "block";
+			}
+		}
+		if(ev.key == "ArrowRight") {
+			let elements = document.getElementsByClassName("marked_for_group_drag");
+			for (let index = 0; index < elements.length; index++) {
+				let elementToMove = elements[index];
+				let left = elementToMove.style.left;
+				left = parseFloat(left);
+				left += 5;
+				elementToMove.style.left = "" + left + "px";
+				if (elementToMove.className.search("notsaved") < 0) {
+					elementToMove.className += " notsaved";
+				}
+				document.getElementById("saveAllButton").style.display = "block";
+			}
+		}
 	});
 
 	

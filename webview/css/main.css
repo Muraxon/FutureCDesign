@@ -158,10 +158,6 @@ input.text_of_element {
 	border: none;
 }
 
-.marked_for_keyboard_handling {
-	background: green !important;
-}
-
 .OK-Button:hover {
 	background-color: rgb(45, 156, 77);
 }

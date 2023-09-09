@@ -343,8 +343,14 @@ export async function activate(context: ExtensionContext) {
 														rangeStart = editor.document.validateRange(rangeStart);
 														
 														try {
-													
+															let value_to_set = messages[y].values[x].text;
 															messages[y].values[x].text = CDesign.FromBrowserToFutureFormat(messages[y].values[x].type, messages[y].values[x].text);
+
+															if(messages[y].type == 15 && (messages[y].values[x].type == "WIDTH=" || messages[y].values[x].type == "HEIGHT=")) {
+																messages[y].values[x].text = value_to_set;
+															}
+
+
 															editBuilder.replace(rangeStart, messages[y].values[x].text);
 															new_editor.selection = new Selection(pos, pos);
 															new_editor.revealRange(rangeStart, TextEditorRevealType.InCenter);

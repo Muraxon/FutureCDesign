@@ -23,6 +23,7 @@ class DlgElement {
 	m_Table :string;
 	m_OnChange :string;
 	m_Module1 :string;
+	m_Module2 :string;
 
 	constructor(Type :string,
 				Name :string,
@@ -42,7 +43,8 @@ class DlgElement {
 				Column :string,
 				Table :string,
 				OnChange :string,
-				module1 :string) {
+				module1 :string,
+				module2 :string) {
 		this.m_Type = Type;
 		this.m_Name = Name;
 		this.m_Xpos = Xpos;
@@ -62,6 +64,7 @@ class DlgElement {
 		this.m_Table = Table;
 		this.m_OnChange = OnChange;
 		this.m_Module1 = module1;
+		this.m_Module2 = module2;
 	}
 
 	public updateElement(new_element :DlgElement) {
@@ -121,10 +124,32 @@ class DlgElement {
 			if(new_element.m_OnChange.length > 0) {
 				this.m_OnChange = new_element.m_OnChange;
 			}
-			if(new_element.m_Module1.length > 0) {
-				this.m_Module1 = new_element.m_Module1;
-			}
+			this.m_Module1 = new_element.m_Module1;
+			this.m_Module2 = new_element.m_Module2;
 		}
+	}
+
+	isModuleActive(module_list :string[]) {
+		if(this.m_Name == "Art des Geschäfts (Intrastat)") {
+			console.log(")");
+		}
+		let moduleFound1 = true;
+		let moduleFound2 = true;
+		if(this.m_Module1.length > 0 && this.m_Module2.length > 0) {
+			moduleFound1 = (module_list.indexOf(this.m_Module1) >= 0);
+			moduleFound2 = (module_list.indexOf(this.m_Module2) >= 0);
+		}
+		if(this.m_Module1.length > 0 && this.m_Module2.length <= 0) {
+			moduleFound1 = (module_list.indexOf(this.m_Module1) >= 0);
+			moduleFound2 = false;
+		}
+
+		if(this.m_Module1.length <= 0 && this.m_Module2.length > 0) {
+			moduleFound1 = false;
+			moduleFound2 = (module_list.indexOf(this.m_Module2) >= 0);
+		}
+		
+		return moduleFound1 || moduleFound2;
 	}
 }
 
@@ -282,8 +307,6 @@ export class CDesign {
 							} else {
 								mREADONLY = "";
 							}
-	
-							let mModule1 = CDesign.MatchModule1(linetext);
 							
 	
 							let regColumn = new RegExp(":" + tablenumber + ";([0-9]+);", "gm");
@@ -337,7 +360,13 @@ export class CDesign {
 							if(dlgElementsMap.has(key)) {
 								oldElement = dlgElementsMap.get(key);
 							}
-	
+							console.log(key);
+							if(key == "150-75") {
+								console.log("TEST");
+							}
+							let mModule1 = CDesign.MatchModule("1",linetext);
+							let mModule2 = CDesign.MatchModule("2",linetext);
+
 							let futuretobrowser = CDesign.ToRightFormat("FromFutureToBrowserFormat");
 							let heightFuture = CDesign.getSetValue(mHeight, oldElement?.m_FutureHeight, "1.2");
 							let widthFuture = CDesign.getSetValue(mWidth, oldElement?.m_FutureWidth, "29");
@@ -349,6 +378,7 @@ export class CDesign {
 							let visibleFuture =  CDesign.getSetValue(mHidden, oldElement?.m_Visible, "1");
 							let pageFuture = CDesign.getSetValue(mPage, oldElement?.m_Page, "1");
 							let module1Future = CDesign.getSetValue(mModule1, oldElement?.m_Module1, "");
+							let module2Future = CDesign.getSetValue(mModule2, oldElement?.m_Module2, "");
 	
 							if(xposFuture.charAt(0) == "+") {
 								let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
@@ -402,7 +432,11 @@ export class CDesign {
 								ypos = "" + ypos + "px";
 							}
 							if(yposFuture.charAt(yposFuture.length - 1) == "B") {
-								ypos = (parseFloat(yposFuture.substring(0, yposFuture.length - 1)) * 100)  + "vw";
+								if(yposFuture.substring(0, yposFuture.length - 1) != "0" && yposFuture.substring(0, yposFuture.length - 1) != "1") {
+									ypos = ((100 - parseFloat(yposFuture.substring(0, yposFuture.length - 1)) * 10))  + "vw";
+								} else {
+									ypos = "97vw";
+								}
 							}
 							
 							let width :string = futuretobrowser(parseFloat(widthFuture), CDesign.xfactor);
@@ -413,10 +447,10 @@ export class CDesign {
 							}
 		
 							if(widthFuture.charAt(widthFuture.length - 1) == "B") {
-								if(widthFuture.substring(0, widthFuture.length - 1) != "0") {
-									width = (parseFloat(widthFuture.substring(0, widthFuture.length - 1)) * 100)  + "vw";
+								if(widthFuture.substring(0, widthFuture.length - 1) != "0" && widthFuture.substring(0, widthFuture.length - 1) != "1") {
+									width = (parseFloat(widthFuture.substring(0, widthFuture.length - 1)) * 10)  + "vw";
 								} else {
-									width = "100vw";
+									width = "97vw";
 								}
 							}
 							
@@ -428,7 +462,11 @@ export class CDesign {
 								height = "" + height + "px";
 							}
 							if(heightFuture.charAt(heightFuture.length - 1) == "B") {
-								height = (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * 100)  + "vw";
+								if(heightFuture.substring(0, heightFuture.length - 1) != "0" && heightFuture.substring(0, heightFuture.length - 1) != "1") {
+									height = (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * 10)  + "vw";
+								} else {
+									height = "97vw";
+								}
 							}
 	
 	
@@ -443,7 +481,7 @@ export class CDesign {
 							*/
 	
 							
-							let newElement = new DlgElement(typeFuture, elementName, xpos, xposFuture, ypos, yposFuture, visibleFuture, mREADONLY, mNEXTTABPOS, pageFuture, mNameposition, heightFuture, height, widthFuture, width, mColumn[1], tablenumber, onchangeText, module1Future);
+							let newElement = new DlgElement(typeFuture, elementName, xpos, xposFuture, ypos, yposFuture, visibleFuture, mREADONLY, mNEXTTABPOS, pageFuture, mNameposition, heightFuture, height, widthFuture, width, mColumn[1], tablenumber, onchangeText, module1Future, module2Future);
 							if(dlgElementsMap.has(key)) {
 								dlgElementsMap.get(key).updateElement(newElement);
 							} else {
@@ -470,13 +508,22 @@ export class CDesign {
 						if(dlgElementsMap.has(key)) {
 							element = dlgElementsMap.get(key);
 						} else {
-
-							let regModule1 = CDesign.MatchModule1(linetext);
+							if(key == "150-75") {
+								console.log(key);
+							}
+							let regModule1 = CDesign.MatchModule("1", linetext);
 							let module1 = "";
 							if(regModule1 && regModule1[1]) {
 								module1 = regModule1[1];
 							}
-							element = new DlgElement("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", mColumn[1], tablenumber, "", module1);
+							let regModule2 = CDesign.MatchModule("2", linetext);
+							let module2 = "";
+							if(regModule2 && regModule2[1]) {
+								module2 = regModule2[1];
+							}
+
+
+							element = new DlgElement("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", mColumn[1], tablenumber, "", module1, module2);
 							dlgElementsMap.set(key, element);
 						}
 						
@@ -534,6 +581,7 @@ export class CDesign {
 			} else {
 
 				let fieldPNG = "";
+				let table_html = "";
 
 				if(element_type == 70 || element_type == 81 || element_type == 31) {
 					fieldPNG = `<img class="element_image" src="MEDIA_PATH/DropDownDesigner.png" alt="">`
@@ -551,14 +599,18 @@ export class CDesign {
 					fieldPNG = `<img class="element_image" src="MEDIA_PATH/MoneyElementDesigner.png" alt="">`
 				} else if(element_type == 45) {
 					fieldPNG = `<img class="element_image_linked_table" src="MEDIA_PATH/LinkedTableElementDesigner.png" alt="">`
-					
 				}
 
+				
+				if(element_type == 45 || element_type == 42) {
+					
+				}
 
 				html_text = `<div ${styleTextField} 
 					${visible_class}
 					DATA_TO_SET_IN_ELEMENT>
 					<div class="text_of_element">${element.m_Name}</div>
+					${table_html}
 					${fieldPNG}
 				</div>
 				`;
@@ -583,10 +635,7 @@ export class CDesign {
 				id="${tablenumber+"-"+element.m_Column}"
 			`);
 
-			let moduleFound = true;
-			if(element.m_Module1.length > 0) {
-				moduleFound = (module.indexOf(element.m_Module1) >= 0)
-			}
+			let moduleFound = element.isModuleActive(module);
 
 			if(moduleFound && element.m_Type != "200" && element.m_Type != "1") {
 				let newHtml = pages_text.get(element.m_Page) + html_text;
@@ -634,7 +683,7 @@ export class CDesign {
 	}
 
 	private static getSetValue(reg :RegExpExecArray, element_value :string | null, default_return :string) :string {
-		if(reg && reg[1]) {
+		if(reg) {
 			return reg[1]
 		}
 		if(element_value) {
@@ -646,8 +695,9 @@ export class CDesign {
 		return default_return;
 	}
 
-	private static MatchModule1(linetext: TextLine) {
-		let regModule1 = /MODULE1[=:]([0-9]+)\b/gm;
+	private static MatchModule(ModuleIndex :string, linetext: TextLine) {
+
+		let regModule1 = new RegExp(`MODULE${ModuleIndex}[=:]([0-9]*)`, "gm");
 		let mModule1: RegExpExecArray | string = regModule1.exec(linetext.text);
 		return mModule1
 	}
