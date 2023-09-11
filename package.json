@@ -84,6 +84,11 @@
 				"command": "open.condition.selector",
 				"title": "Open Condition Selector",
 				"category": "FutureC"
+			},
+			{
+				"command": "create.database.column",
+				"title": "Datenbankspalte erstellen",
+				"category": "FutureC"
 			}
 		],
 		"menus": {
@@ -96,6 +101,11 @@
 				{
 					"when": "editorFocus && editorLangId == futurecdesign",
 					"command": "open.condition.selector",
+					"group": "navigation"
+				},
+				{
+					"when": "editorFocus && editorLangId == futurecdesign",
+					"command": "create.database.column",
 					"group": "navigation"
 				}
 			],
