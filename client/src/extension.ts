@@ -14,6 +14,8 @@ import {
 	TransportKind
 } from 'vscode-languageclient/node';
 import { CDesign } from './CDesignWebConstructor';
+import { ImportattributesEditorProvider } from './CustomEditors/ImportAttributes Editor';
+import { ImportRecordsEditorProvider } from './CustomEditors/Importrecords Editor';
 
 let client: LanguageClient;
 let extension_path :string;
@@ -115,6 +117,8 @@ export async function activate(context: ExtensionContext) {
 	extension_path = context.extensionPath;
 	let FilesImportattributes = await workspace.findFiles("**/*importattributes*");
 	
+	context.subscriptions.push(ImportattributesEditorProvider.register(context));
+	context.subscriptions.push(ImportRecordsEditorProvider.register(context));
 
 	// The server is implemented in node
 	let serverModule = context.asAbsolutePath(
@@ -303,7 +307,7 @@ export async function activate(context: ExtensionContext) {
 								break;
 							case "saveChanges":
 								let new_editor = await window.showTextDocument(editor.document, ViewColumn.Active);
-		
+								
 								messages[y].values.sort((a, b) => {
 									return a.order - b.order
 								})
@@ -433,6 +437,29 @@ export async function activate(context: ExtensionContext) {
 												}
 											}
 
+										}
+
+										if(index < 0) {
+											increment = true;
+											searchColumn = 1;
+											tabletoSearch = parseInt(messages[y].table);
+											while(index < 0 && searchColumn >= 1 && searchColumn < 1000 && tabletoSearch > 0 && tabletoSearch < 1000) {
+												index = text.search("CHANGEDIALOGELEMENT:" + tabletoSearch + ";" + searchColumn + ";");
+												if(!increment) {
+													searchColumn--;
+													if(searchColumn <= 1) {
+														tabletoSearch--;
+														searchColumn = 1000;
+													}
+												} else {
+													searchColumn++;
+													if(searchColumn > 1000) {
+														tabletoSearch++;
+														searchColumn = 0;
+													}
+												}
+	
+											}
 										}
 
 										if(index < 0) {

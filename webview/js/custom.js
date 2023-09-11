@@ -5,6 +5,10 @@ const xFactor = 5;
 const yFactor = 40;
 const heightFactor = 19.16666666;
 
+const yfactorB = 40 / 1173;		// 1173
+const heightfactorB = 20;
+
+
 const vscode = acquireVsCodeApi();
 let table = document.getElementById("tablenumber").content;
 let activeIndex = document.getElementById("activeindex").content;
@@ -22,6 +26,28 @@ export function openOtherTab(newActiveIndex) {
   v.forEach(value => {
 	let temp = value.style.width;
 	value.style.width = "10000px";
+
+	// if(value.getAttribute("data-ypos").indexOf("B") >= 0) {
+	// 	let futureYPOS = value.getAttribute("data-ypos");
+	// 	futureYPOS = parseFloat(futureYPOS.substring(0, futureYPOS.length - 1));
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	futureYPOS += parseFloat(value.getAttribute("data-height"));
+	// 	futureYPOS = futureYPOS * (document.documentElement.clientHeight * yfactorB);
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	futureYPOS = document.documentElement.clientHeight - futureYPOS;
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	value.style.top = "" + futureYPOS + "px";
+	// }
+	// if(value.getAttribute("data-height").indexOf("B") >= 0) {
+	// 	let futureYPOS = value.getAttribute("data-height");
+	// 	futureYPOS = parseFloat(futureYPOS.substring(0, futureYPOS.length - 1));
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	futureYPOS = futureYPOS * (document.documentElement.clientHeight * yfactorB);
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	futureYPOS = document.documentElement.clientHeight - futureYPOS;
+	// 	console.log(futureYPOS, document.documentElement.clientHeight);
+	// 	value.style.height = "" + futureYPOS + "px";
+	// }
 
 	if((value.getAttribute("data-nameposition") == 1 && value.getAttribute("data-type") != 15) || value.getAttribute("data-type") == 45 || value.getAttribute("data-type") == 232) {
 		value.children[0].style.left = "0px";
@@ -288,6 +314,10 @@ export function showElementDialog(event) {
 		if (target.className.search("text_of_element") >= 0) {
 			target = event.target.parentElement;
 		}
+		if (target.className.search("element_image") >= 0) {
+			target = event.target.parentElement;
+		}
+		
 		document.getElementById("column").value = target.getAttribute("data-column");
 		document.getElementById("column_info").innerHTML = "Spalte: " + target.getAttribute("data-column");
 		document.getElementById("onchange").value = target.getAttribute("data-onchange");
@@ -300,6 +330,9 @@ export function showElementDialog(event) {
 		document.getElementById("name").value = target.getAttribute("data-name");
 		document.getElementById("elementheight").value = target.getAttribute("data-height");
 		document.getElementById("elementwidth").value = target.getAttribute("data-width");
+
+
+		
 
 		document.getElementById('id01').style.display = 'block';
 

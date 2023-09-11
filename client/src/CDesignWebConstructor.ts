@@ -165,6 +165,9 @@ export class CDesign {
 	public static get yfactor() { return 40; }
 	public static get heightfactor() { return 23/1.2; }
 
+	public static get yfactorB() { return 40; }
+	public static get heightfactorB() { return 20; }
+
 	constructor() {
 
 	}
@@ -269,7 +272,7 @@ export class CDesign {
 							let regHidden = /VISIBLE=(1|0)/gm;
 							let mHidden = regHidden.exec(linetext.text);
 							
-							let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9€()\/\\%\.\-\<\>]+);/gm;
+							let regName = /NAME=([a-zA-Z öäüÖÄÜß0-9€()\/\\%\.:\-\<\>]+);/gm;
 							let mName = regName.exec(linetext.text);
 							
 							let regWidth = /WIDTH=([0-9.%B]+);/gm;
@@ -360,10 +363,7 @@ export class CDesign {
 							if(dlgElementsMap.has(key)) {
 								oldElement = dlgElementsMap.get(key);
 							}
-							console.log(key);
-							if(key == "150-75") {
-								console.log("TEST");
-							}
+
 							let mModule1 = CDesign.MatchModule("1",linetext);
 							let mModule2 = CDesign.MatchModule("2",linetext);
 
@@ -379,7 +379,13 @@ export class CDesign {
 							let pageFuture = CDesign.getSetValue(mPage, oldElement?.m_Page, "1");
 							let module1Future = CDesign.getSetValue(mModule1, oldElement?.m_Module1, "");
 							let module2Future = CDesign.getSetValue(mModule2, oldElement?.m_Module2, "");
-	
+							
+							// 0.1B in YPOS = 4 pixel = 1B sind 40 Pixel
+							// 0.1B in Height = 2 pixel = 1B sind 20 Pixel
+							if(elementName == "Fußtexte") {
+								console.log(key);
+							}
+
 							if(xposFuture.charAt(0) == "+") {
 								let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
 								if(prevElement) {
@@ -393,14 +399,28 @@ export class CDesign {
 							if(yposFuture.charAt(0) == "+") {
 								let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
 								if(prevElement) {
-									yposFuture = "" + (parseFloat(prevElement.m_YPosFuture) + parseFloat(prevElement.m_FutureHeight) + parseFloat(yposFuture.substring(1)));
+									let futureHeightTemp = prevElement.m_FutureHeight;
+									if(prevElement.m_Type == "4") {
+										futureHeightTemp = "0";
+									}
+
+									yposFuture = "" + (parseFloat(prevElement.m_YPosFuture) + parseFloat(futureHeightTemp) + parseFloat(yposFuture.substring(1)));
 	
 									if(prevElement.m_FutureHeight.charAt(prevElement.m_FutureHeight.length - 1) == "%") {
 										yposFuture += "%";
 									}
 								}
 							}
+							if(yposFuture.charAt(0) == "-") {
+								let prevElement = dlgElementsMap.has(prevKey) ? dlgElementsMap.get(prevKey) : null;
+								if(prevElement) {
+									yposFuture = "" + (parseFloat(prevElement.m_YPosFuture) - parseFloat(yposFuture.substring(1)));
 	
+									if(prevElement.m_FutureHeight.charAt(prevElement.m_FutureHeight.length - 1) == "%") {
+										yposFuture += "%";
+									}
+								}
+							}
 	
 	
 	
@@ -433,11 +453,12 @@ export class CDesign {
 							}
 							if(yposFuture.charAt(yposFuture.length - 1) == "B") {
 								if(yposFuture.substring(0, yposFuture.length - 1) != "0" && yposFuture.substring(0, yposFuture.length - 1) != "1") {
-									ypos = ((100 - parseFloat(yposFuture.substring(0, yposFuture.length - 1)) * 10))  + "vw";
+									ypos = "" + (100 - (parseFloat(yposFuture.substring(0, yposFuture.length - 1)) * 6)) + "vh";
 								} else {
-									ypos = "97vw";
+									ypos = "97vh";
 								}
 							}
+
 							
 							let width :string = futuretobrowser(parseFloat(widthFuture), CDesign.xfactor);
 							if(widthFuture.search("%") >= 0) {
@@ -463,9 +484,10 @@ export class CDesign {
 							}
 							if(heightFuture.charAt(heightFuture.length - 1) == "B") {
 								if(heightFuture.substring(0, heightFuture.length - 1) != "0" && heightFuture.substring(0, heightFuture.length - 1) != "1") {
-									height = (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * 10)  + "vw";
+									//height = (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * this.heightfactorB)  + "px";
+									height = "" + (100 - (parseFloat(heightFuture.substring(0, heightFuture.length - 1)) * 6))  + "vh";
 								} else {
-									height = "97vw";
+									height = "97vh";
 								}
 							}
 	
@@ -632,6 +654,8 @@ export class CDesign {
 				data-name="${element.m_Name}" 
 				data-height="${element.m_FutureHeight}" 
 				data-width="${element.m_FutureWidth}" 
+				data-ypos="${element.m_YPosFuture}" 
+				data-xpos="${element.m_XposFuture}" 
 				id="${tablenumber+"-"+element.m_Column}"
 			`);
 

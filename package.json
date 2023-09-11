@@ -22,6 +22,28 @@
 	"icon": "logo.png",
 	"main": "./client/out/extension",
 	"contributes": {
+		"customEditors": [
+			{
+				"viewType": "MarcelSotiropoulos.Importattributes",
+				"displayName": "Importattributes Editor",
+				"selector": [
+					{
+						"filenamePattern": "*importattributes*"
+					}
+				],
+				"priority": "option"
+			},
+			{
+				"viewType": "MarcelSotiropoulos.Importrecords",
+				"displayName": "Importrecords Editor",
+				"selector": [
+					{
+						"filenamePattern": "*importrecords*"
+					}
+				],
+				"priority": "option"
+			}
+		],
 		"languages": [
 			{
 				"id": "futurecdesign",
