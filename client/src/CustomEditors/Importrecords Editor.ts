@@ -39,6 +39,9 @@ export class ImportRecordsEditorProvider implements vscode.CustomTextEditorProvi
 
 	private static readonly viewType = 'MarcelSotiropoulos.Importrecords';
 
+	private static m_TableInfo :Map<number,{columns: Map<number,string>, table_name :string}> = new Map();
+
+
 	constructor(
 		private readonly context: vscode.ExtensionContext
 	) { }
@@ -57,7 +60,7 @@ export class ImportRecordsEditorProvider implements vscode.CustomTextEditorProvi
 		webviewPanel.webview.options = {
 			enableScripts: true,
 		};
-		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel, document);
+		webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel, document);
 		function updateWebview() {
 			webviewPanel.webview.postMessage({
 				type: 'update',
@@ -99,52 +102,166 @@ export class ImportRecordsEditorProvider implements vscode.CustomTextEditorProvi
 		updateWebview();
 	}
 
+	async CollectProgramTables(FilesImportattributes :vscode.Uri[]) {
+
+		for (let index = 0; index < FilesImportattributes.length; index++) {
+			const element = FilesImportattributes[index];
+			let document = await vscode.workspace.openTextDocument(element);
+			let document_text = document.getText();
+
+			let table_start_reg = new RegExp("^([0-9]+)\\t[0-9]+\\t", "gm");
+			let foundTable = table_start_reg.exec(document_text);
+			while(foundTable &&  foundTable[1]) {
+				let startColumn = 1;
+				let failures_columns = 0;
+
+				let table_name_reg = new RegExp("" + foundTable[1] + "\\tTABLE\\t([a-zA-ZöäüÖÄÜ_ \\-0-9€\\/]+)", "gm");
+				let table_name = table_name_reg.exec(document_text);
+				
+				while(startColumn < 1000 && failures_columns < 10) {
+					let column_start_reg = new RegExp("^" + foundTable[1] + "\\t" + startColumn + "\\t[0-9]+\\t([a-zA-ZöäüÖÄÜ_ \\-0-9€\\/]+)", "gm");
+					let column_reg = column_start_reg.exec(document_text);
+					if(column_reg && column_reg[1]) {
+						failures_columns = 0;
+
+						if(ImportRecordsEditorProvider.m_TableInfo.has(parseInt(foundTable[1]))) {
+							let table = ImportRecordsEditorProvider.m_TableInfo.get(parseInt(foundTable[1]))
+							table.columns.set(startColumn, column_reg[1]);
+						} else {
+							let table_columns :Map<number,string> = new Map();
+							table_columns.set(startColumn, column_reg[1]);
+
+							let table_name_string = ""
+							if(table_name && table_name[1]) {
+								table_name_string = table_name[1];
+							}
+
+							ImportRecordsEditorProvider.m_TableInfo.set(parseInt(foundTable[1]), {columns: table_columns, table_name: table_name_string});
+						}
+						if(table_start_reg.lastIndex < column_reg.index) {
+							table_start_reg.lastIndex = column_reg.index + 1;
+						}
+					} else {
+						failures_columns++;
+					}
+					startColumn++;
+				}					
+				if(failures_columns >= 10) {
+					table_start_reg.lastIndex = table_start_reg.lastIndex + 10;
+				}
+
+				foundTable = table_start_reg.exec(document_text);
+			}
+		}
+	}
+
 	/**
 	 * Get the static html used for the editor webviews.
 	 */
-	private getHtmlForWebview(webview: vscode.WebviewPanel, textdocument :vscode.TextDocument): string {
-
-		let columns = 0;
-		let html = "";
-		for (let index = 0; index < textdocument.lineCount; index++) {
-			let line = textdocument.lineAt(index);
-			if(line.text.trim().length > 0) {
-				let splittedLine = line.text.split(/\t/gm)
-				let temp_columns = splittedLine.length;
-				if(temp_columns > columns) {
-					columns = temp_columns;
-				}
-			}
+	private async getHtmlForWebview(webview: vscode.WebviewPanel, textdocument :vscode.TextDocument): Promise<string> {
+		let FilesImportattributes = await vscode.workspace.findFiles("Standard/*importattributes*");
+		if(ImportRecordsEditorProvider.m_TableInfo.size <= 0) {
+			await this.CollectProgramTables(FilesImportattributes);
 		}
+		let document_text = textdocument.getText();
+		
+		let html_complete = "";
+		let navigation_buttons = "";
+		
+		let import_table_reg = new RegExp("^TABLE:([0-9]+)", "gm");
+		let import_table = import_table_reg.exec(document_text);
+		while(import_table && import_table[1]) {
+			let html = "";
+			let line_number = textdocument.positionAt(import_table.index + 1).line;
 
-		for (let index = 0; index < textdocument.lineCount; index++) {
-			let line = textdocument.lineAt(index);
-			if(line.text.trim().length > 0) {
+			let line = textdocument.lineAt(line_number);
+			let line_text = line.text.trim();
+			if(line_text.indexOf("//") > 0) {
+				line_text = line_text.substring(0, line_text.indexOf("//"));
+			}
+
+			let strSpaltenzuweisung :string[] = [];
+
+			while(line_text.length > 0) {
 
 
-				let splittedLine = line.text.split(/\t/gm)
-	
-				html += "<tr>"
-				let current_column = 0;
-				splittedLine.forEach((value) => {
-					if(value.trim().length > 0) {
-						html += `<td id="${current_column++}">${escape_HTML(value)}</td>`
-					} else {
-						html += `<td id="${current_column++}"></td>`
+				if(line_text.startsWith("COLS:")) {
+					strSpaltenzuweisung = line_text.substring(5).split(",");
+				} else if(line_text.search(/^[0-9]+/gm) == 0) {
+					let line_splitted = line_text.split("\t");
+					html += "<tr>";
+					line_splitted.forEach((value, index) => {
+						if(value.trim().length > 0) {
+							html += `<td id=${import_table[1] + "-" + index}>${escape_HTML(value)}</td>`
+						} else {
+							html += `<td></td>`
+						}
+					});
+					html += "</tr>";
+				}
+
+				line_number++;
+				if(line_number < textdocument.lineCount) {
+					line = textdocument.lineAt(line_number);
+					line_text = line.text.trim();
+					if(line_text.indexOf("//") > 0) {
+						line_text = line_text.substring(0, line_text.indexOf("//"));
 					}
-				});
-				while(current_column < columns) {
-					html += `<td id="${current_column++}"></td>`
+				} else {
+					line_text = "";
 				}
-				html += "</tr>"
-
 			}
-		}
+			
+			let column_header = "<tr>";
 
-		let columnsHtml = ""
-		for (let index = 0; index < columns; index++) {
-			columnsHtml += `<th>Spalte ${"" + (index + 1)}</th>`;
+			
+			let table = "";
+			strSpaltenzuweisung.forEach((value) => {
+				let column_number = parseInt(value);
+				let table_number = parseInt(import_table[1]);
+
+
+
+
+				let column_name = "";
+				if(ImportRecordsEditorProvider.m_TableInfo.has(table_number)) {
+					if(column_number == 1) {
+						column_name = "ID";
+					} else if(column_number == 2){
+						column_name = "Aktiv";
+					} else {
+ 						table = ImportRecordsEditorProvider.m_TableInfo.get(table_number).table_name;
+
+
+						if(ImportRecordsEditorProvider.m_TableInfo.get(table_number).columns.has(column_number)) {
+							column_name = ImportRecordsEditorProvider.m_TableInfo.get(table_number).columns.get(column_number);
+						}
+					}
+				}
+
+				column_header += `<th>${column_name}</th>`;
+			})
+			column_header += "</tr>";
+			
+			navigation_buttons += `<button data-id="${import_table[1]}">${table} (${import_table[1]})</button>`
+
+			html = `
+			<table id="${import_table[1]}">
+			<thead>
+			${column_header}
+			</thead>
+			<tbody>
+			${html}
+			</tbody>
+			</table>`;
+
+			html_complete += html;
+
+			import_table = import_table_reg.exec(document_text);
 		}
+		
+
+
 
 		return /* html */`
 			<!DOCTYPE html>
@@ -162,20 +279,16 @@ export class ImportRecordsEditorProvider implements vscode.CustomTextEditorProvi
 				
 			</head>
 			<body>
+			<div>${navigation_buttons}</div>
 			
-			<table id="myTable" class="display">
-			<thead>
-			<tr>
-			${columnsHtml}
-			</tr>
-			</thead>
-			<tbody>
-			${html}
-			</tbody>
-			</table>
+			<br>
+			<br>
+			
+			${html_complete}
 
 				
 			<script src="${createWebViewLink(this.context.extensionPath, webview, "webview", "js", "jquery.js")}"></script>
+			<script src="${createWebViewLink(this.context.extensionPath, webview, "webview", "js", "importrecords.js")}"></script>
 			</body>
 			</html>`;
 	}
